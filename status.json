@@ -1,6 +1,6 @@
 {
   "domain": "totomantapsuper.icu",
-  "checked_at": "2026-08-14T01:29:54.118Z",
+  "checked_at": "2026-08-14T01:33:41.227Z",
   "verdict": "accessible",
   "nodes": {
     "id1.node.check-host.net": {
@@ -8,7 +8,7 @@
       "isIndonesia": true,
       "ok": true,
       "httpCode": "200",
-      "timeSec": 0.106,
+      "timeSec": 0.163,
       "message": "OK"
     },
     "id2.node.check-host.net": {
@@ -16,7 +16,7 @@
       "isIndonesia": true,
       "ok": true,
       "httpCode": "200",
-      "timeSec": 0.143,
+      "timeSec": 0.246,
       "message": "OK"
     },
     "sg1.node.check-host.net": {
@@ -24,7 +24,7 @@
       "isIndonesia": false,
       "ok": true,
       "httpCode": "200",
-      "timeSec": 0.112,
+      "timeSec": 0.103,
       "message": "OK"
     }
   }
