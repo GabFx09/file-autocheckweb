@@ -9,6 +9,7 @@ on:
     paths:
       - "scripts/check-status.mjs"
       - ".github/workflows/check-status.yml"
+      - "domains.json"
 
 permissions:
   contents: write
@@ -28,6 +29,9 @@ jobs:
           node-version: "20"
 
       - name: Run status check (from Indonesia + reference node)
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: node scripts/check-status.mjs
 
       - name: Commit status.json if changed

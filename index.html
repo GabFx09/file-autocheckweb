@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Status Blokir - totomantapsuper.icu</title>
+<title>Status Blokir Website</title>
 <style>
   :root {
     --bg: #0f1115;
@@ -26,169 +26,164 @@
     justify-content: center;
     padding: 40px 16px;
   }
-  .wrap { width: 100%; max-width: 640px; }
+  .wrap { width: 100%; max-width: 680px; }
   h1 { font-size: 22px; margin: 0 0 4px; }
+  .sub { color: var(--muted); font-size: 14px; margin-bottom: 24px; }
   .domain {
     color: var(--accent);
     font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   }
-  .sub { color: var(--muted); font-size: 14px; margin-bottom: 28px; }
-  .card {
+
+  .site-card {
     background: var(--card);
     border: 1px solid var(--border);
     border-radius: 12px;
-    padding: 24px;
+    padding: 20px 24px;
     margin-bottom: 16px;
   }
+  .site-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 8px;
+  }
+  .site-head .name {
+    font-size: 16px;
+    font-weight: 700;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+  .badge {
+    font-size: 12px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+  .badge.ok { background: rgba(53,192,127,0.15); color: var(--ok); }
+  .badge.warn { background: rgba(245,185,66,0.15); color: var(--warn); }
+  .badge.bad { background: rgba(229,72,77,0.15); color: var(--bad); }
+  .site-desc { font-size: 13px; color: var(--muted); margin-bottom: 14px; }
+
   .status-row {
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 12px 0;
-    border-bottom: 1px solid var(--border);
+    padding: 10px 0;
+    border-top: 1px solid var(--border);
   }
-  .status-row:last-child { border-bottom: none; }
-  .dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; background: var(--muted); }
+  .dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; background: var(--muted); }
   .dot.ok { background: var(--ok); box-shadow: 0 0 8px var(--ok); }
   .dot.bad { background: var(--bad); box-shadow: 0 0 8px var(--bad); }
-  .dot.pending { background: var(--muted); animation: pulse 1.2s infinite ease-in-out; }
-  @keyframes pulse { 0%,100% { opacity: .3; } 50% { opacity: 1; } }
-  .row-text { flex: 1; }
-  .row-title { font-size: 14px; font-weight: 600; }
-  .row-desc { font-size: 12px; color: var(--muted); margin-top: 2px; }
-  .row-state { font-size: 13px; font-weight: 600; text-align: right; }
+  .row-text { flex: 1; font-size: 13px; }
+  .row-state { font-size: 12px; font-weight: 600; text-align: right; }
   .row-state.ok { color: var(--ok); }
   .row-state.bad { color: var(--bad); }
-  .row-state.pending { color: var(--muted); }
   .row-sub { font-size: 11px; color: var(--muted); margin-top: 2px; text-align: right; }
+  .timestamp { font-size: 11px; color: var(--muted); margin-top: 10px; text-align: right; }
 
-  .conclusion {
-    border-radius: 12px;
-    padding: 20px 24px;
-    font-size: 15px;
-    font-weight: 600;
-    display: flex;
-    gap: 12px;
-    align-items: flex-start;
-    border: 1px solid var(--border);
+  .empty, .loading {
+    color: var(--muted);
+    font-size: 14px;
+    padding: 20px 0;
   }
-  .conclusion.ok { background: rgba(53,192,127,0.1); border-color: var(--ok); color: var(--ok); }
-  .conclusion.warn { background: rgba(245,185,66,0.1); border-color: var(--warn); color: var(--warn); }
-  .conclusion.bad { background: rgba(229,72,77,0.1); border-color: var(--bad); color: var(--bad); }
-  .conclusion.pending { background: rgba(139,147,161,0.08); color: var(--muted); }
-  .conclusion .icon { font-size: 20px; line-height: 1; }
-  .conclusion .desc { font-weight: 400; font-size: 13px; margin-top: 6px; color: var(--muted); }
 
-  .timestamp { color: var(--muted); font-size: 12px; margin-top: 12px; text-align: right; }
   .footer-note { color: var(--muted); font-size: 12px; margin-top: 24px; line-height: 1.6; }
   a { color: var(--accent); }
+  code {
+    background: rgba(255,255,255,0.06);
+    padding: 1px 5px;
+    border-radius: 4px;
+    font-size: 12px;
+  }
 </style>
 </head>
 <body>
 <div class="wrap">
   <h1>Status Akses Website</h1>
-  <div class="sub">Dicek langsung dari jaringan <strong>Indonesia (Jakarta)</strong> secara berkala untuk <span class="domain">totomantapsuper.icu</span></div>
+  <div class="sub">Dicek otomatis dari jaringan <strong>Indonesia (Jakarta)</strong>, notifikasi dikirim ke Telegram saat ada perubahan status.</div>
 
-  <div class="card" id="node-card">
-    <div class="status-row">
-      <div class="row-text"><div class="row-title">Memuat data...</div></div>
-    </div>
+  <div id="sites-container">
+    <div class="loading">Memuat data...</div>
   </div>
-
-  <div class="conclusion pending" id="conclusion">
-    <div class="icon">⏳</div>
-    <div>
-      <div id="conclusion-title">Memuat status...</div>
-      <div class="desc" id="conclusion-desc"></div>
-    </div>
-  </div>
-
-  <div class="timestamp" id="timestamp"></div>
 
   <div class="footer-note">
-    Pengecekan dilakukan otomatis tiap ±15 menit oleh GitHub Actions, memakai jaringan probe pihak ketiga
-    <a href="https://check-host.net" target="_blank" rel="noopener">check-host.net</a> dari dua titik di Jakarta,
-    dibandingkan dengan satu titik di luar Indonesia (Singapura) sebagai pembanding. Ini bersifat indikatif,
-    bukan data resmi dari Kominfo/Komdigi.
+    Pengecekan dijalankan GitHub Actions tiap ±15 menit lewat jaringan probe pihak ketiga
+    <a href="https://check-host.net" target="_blank" rel="noopener">check-host.net</a>, dari dua titik di Jakarta
+    dibandingkan satu titik di Singapura sebagai pembanding. Untuk menambah domain yang dipantau, edit
+    <code>domains.json</code> di repo. Bersifat indikatif, bukan data resmi Kominfo/Komdigi.
   </div>
 </div>
 
 <script>
+const VERDICT_META = {
+  accessible: { kind: "ok", label: "Aktif", icon: "✅", title: "Bisa diakses dari Indonesia",
+    desc: "Kedua titik di Jakarta berhasil menjangkau situs ini. Tidak terindikasi diblokir." },
+  blocked_in_indonesia: { kind: "bad", label: "Diblokir", icon: "🚫", title: "Terindikasi diblokir di Indonesia",
+    desc: "Titik di Jakarta gagal mengakses, sementara titik pembanding di luar Indonesia berhasil." },
+  site_down: { kind: "bad", label: "Down", icon: "❌", title: "Tidak dapat diakses",
+    desc: "Semua titik (Jakarta & pembanding) gagal. Kemungkinan situs sedang down, bukan diblokir." },
+  partial: { kind: "warn", label: "Sebagian", icon: "⚠️", title: "Hasil tidak konsisten",
+    desc: "Salah satu titik Jakarta gagal, satu lagi berhasil. Kemungkinan blokir parsial per-ISP." },
+};
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+
+function renderSite(site) {
+  const meta = VERDICT_META[site.verdict] || { kind: "warn", label: "?", icon: "⏳", title: "Status tidak diketahui", desc: "" };
+  const nodeRows = Object.values(site.nodes || {}).map((n) => {
+    const dotClass = n.ok ? "ok" : "bad";
+    const stateText = n.ok ? "Bisa diakses" : "Tidak bisa diakses";
+    const sub = n.ok
+      ? `HTTP ${n.httpCode ?? "?"} · ${n.timeSec != null ? (n.timeSec * 1000).toFixed(0) + " ms" : ""}`
+      : (n.message || "Gagal terhubung");
+    return `
+      <div class="status-row">
+        <div class="dot ${dotClass}"></div>
+        <div class="row-text">${escapeHtml(n.label)}${n.isIndonesia ? " 🇮🇩" : ""}</div>
+        <div>
+          <div class="row-state ${dotClass}">${stateText}</div>
+          <div class="row-sub">${escapeHtml(sub)}</div>
+        </div>
+      </div>`;
+  }).join("");
+
+  const timestamp = site.checked_at
+    ? new Date(site.checked_at).toLocaleString("id-ID", { timeZone: "Asia/Jakarta" }) + " WIB"
+    : "-";
+
+  return `
+    <div class="site-card">
+      <div class="site-head">
+        <div class="name">${escapeHtml(site.domain)}</div>
+        <div class="badge ${meta.kind}">${meta.icon} ${meta.label}</div>
+      </div>
+      <div class="site-desc">${meta.desc}</div>
+      ${nodeRows}
+      <div class="timestamp">Terakhir diperiksa: ${timestamp}</div>
+    </div>`;
+}
+
 async function load() {
+  const container = document.getElementById("sites-container");
   let status;
   try {
     const res = await fetch("status.json?_=" + Date.now(), { cache: "no-store" });
     status = await res.json();
   } catch (e) {
-    document.getElementById("node-card").innerHTML =
-      '<div class="status-row"><div class="row-text"><div class="row-title">Gagal memuat status.json</div></div></div>';
+    container.innerHTML = '<div class="empty">Gagal memuat status.json</div>';
     return;
   }
 
-  const card = document.getElementById("node-card");
-  const nodeEntries = Object.entries(status.nodes || {});
-
-  if (nodeEntries.length === 0) {
-    card.innerHTML = '<div class="status-row"><div class="row-text"><div class="row-title">Belum ada data</div><div class="row-desc">Menunggu hasil pengecekan pertama dari GitHub Actions.</div></div></div>';
-  } else {
-    card.innerHTML = nodeEntries.map(([id, n]) => {
-      const dotClass = n.ok ? "ok" : "bad";
-      const stateText = n.ok ? "Bisa diakses" : "Tidak bisa diakses";
-      const sub = n.ok
-        ? `HTTP ${n.httpCode ?? "?"} · ${n.timeSec != null ? (n.timeSec * 1000).toFixed(0) + " ms" : ""}`
-        : (n.message || "Gagal terhubung");
-      return `
-        <div class="status-row">
-          <div class="dot ${dotClass}"></div>
-          <div class="row-text">
-            <div class="row-title">${n.label}${n.isIndonesia ? " 🇮🇩" : ""}</div>
-          </div>
-          <div>
-            <div class="row-state ${dotClass}">${stateText}</div>
-            <div class="row-sub">${sub}</div>
-          </div>
-        </div>`;
-    }).join("");
+  const sites = Object.values(status.sites || {});
+  if (sites.length === 0) {
+    container.innerHTML = '<div class="empty">Belum ada data. Menunggu hasil pengecekan pertama dari GitHub Actions, atau <code>domains.json</code> masih kosong.</div>';
+    return;
   }
 
-  const conclusionEl = document.getElementById("conclusion");
-  const titleEl = document.getElementById("conclusion-title");
-  const descEl = document.getElementById("conclusion-desc");
-  conclusionEl.querySelector(".icon");
-
-  const setConclusion = (kind, icon, title, desc) => {
-    conclusionEl.classList.remove("ok", "warn", "bad", "pending");
-    conclusionEl.classList.add(kind);
-    conclusionEl.querySelector(".icon").textContent = icon;
-    titleEl.textContent = title;
-    descEl.textContent = desc;
-  };
-
-  switch (status.verdict) {
-    case "accessible":
-      setConclusion("ok", "✅", "Website dapat diakses dari Indonesia",
-        "Kedua titik pengecekan di Jakarta berhasil menjangkau situs ini. Tidak terindikasi diblokir.");
-      break;
-    case "blocked_in_indonesia":
-      setConclusion("bad", "🚫", "Terindikasi diblokir di Indonesia",
-        "Titik di Jakarta gagal mengakses situs ini, sementara titik pembanding di luar Indonesia berhasil. Ini indikasi kuat domain diblokir ISP/Internet Positif di Indonesia.");
-      break;
-    case "site_down":
-      setConclusion("bad", "❌", "Website tidak dapat diakses",
-        "Baik titik di Jakarta maupun titik pembanding di luar Indonesia sama-sama gagal. Kemungkinan situs sedang down, bukan diblokir.");
-      break;
-    case "partial":
-      setConclusion("warn", "⚠️", "Hasil tidak konsisten di Indonesia",
-        "Salah satu titik di Jakarta berhasil, satu lagi gagal. Kemungkinan blokir hanya berlaku di sebagian ISP, atau ada gangguan sementara.");
-      break;
-    default:
-      setConclusion("pending", "⏳", "Menunggu hasil pengecekan pertama",
-        "Jalankan workflow GitHub Actions (tab Actions → Check website status → Run workflow) atau tunggu jadwal otomatis berikutnya.");
-  }
-
-  document.getElementById("timestamp").textContent = status.checked_at
-    ? "Terakhir diperiksa: " + new Date(status.checked_at).toLocaleString("id-ID", { timeZone: "Asia/Jakarta" }) + " WIB"
-    : "";
+  container.innerHTML = sites.map(renderSite).join("");
 }
 
 load();
