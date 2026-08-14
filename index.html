@@ -96,6 +96,69 @@
     border-radius: 4px;
     font-size: 12px;
   }
+
+  details.admin {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 4px 24px;
+    margin-top: 24px;
+  }
+  details.admin summary {
+    cursor: pointer;
+    padding: 14px 0;
+    font-size: 14px;
+    font-weight: 600;
+    list-style: none;
+  }
+  details.admin summary::-webkit-details-marker { display: none; }
+  .admin-body { padding-bottom: 20px; }
+  .field-label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+  .field-row { display: flex; gap: 8px; }
+  .field-row input {
+    flex: 1;
+    background: #0c0e13;
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 9px 12px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+  .field-row input:focus { outline: 1px solid var(--accent); }
+  .field-hint { font-size: 11px; color: var(--muted); margin-top: 6px; line-height: 1.5; }
+  button.primary-btn, button.secondary-btn {
+    border: none;
+    padding: 9px 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  button.primary-btn { background: var(--accent); color: #fff; }
+  button.primary-btn:hover { opacity: 0.9; }
+  button.primary-btn:disabled { opacity: 0.5; cursor: default; }
+  button.secondary-btn { background: transparent; border: 1px solid var(--border); color: var(--text); }
+  .link-btn {
+    background: none; border: none; color: var(--muted);
+    font-size: 12px; text-decoration: underline; cursor: pointer; padding: 0;
+  }
+  .token-ok { color: var(--ok); font-size: 13px; font-weight: 600; }
+  .admin-msg { font-size: 12px; margin-top: 10px; min-height: 16px; }
+  .admin-msg.error { color: var(--bad); }
+  .admin-msg.success { color: var(--ok); }
+  .admin-msg.info { color: var(--muted); }
+  .domain-list { margin-top: 16px; }
+  .domain-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-top: 1px solid var(--border);
+    font-size: 13px;
+  }
+  .domain-row .dname { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
 </style>
 </head>
 <body>
@@ -107,11 +170,42 @@
     <div class="loading">Memuat data...</div>
   </div>
 
+  <details class="admin" id="admin-panel">
+    <summary>⚙️ Kelola domain (khusus admin)</summary>
+    <div class="admin-body">
+      <div id="token-section">
+        <label class="field-label">GitHub Personal Access Token (tersimpan hanya di browser ini)</label>
+        <div class="field-row">
+          <input type="password" id="pat-input" placeholder="github_pat_xxx" autocomplete="off" />
+          <button class="primary-btn" id="pat-save-btn">Simpan</button>
+        </div>
+        <div class="field-hint">
+          Buat fine-grained token khusus untuk repo <code>GabFx09/file-autocheckweb</code> dengan izin
+          <b>Contents: Read and write</b> di
+          <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">github.com/settings/personal-access-tokens/new</a>.
+          Token tidak pernah dikirim ke server lain, hanya dipakai browser Anda untuk memanggil GitHub API langsung.
+        </div>
+      </div>
+      <div id="token-active" style="display:none;">
+        <span class="token-ok">✓ Token tersimpan di browser ini</span>
+        &nbsp;·&nbsp;
+        <button class="link-btn" id="pat-clear-btn">Lupakan token</button>
+      </div>
+
+      <div class="field-row" style="margin-top:18px;">
+        <input type="text" id="new-domain-input" placeholder="contoh: situsku.com" autocomplete="off" />
+        <button class="primary-btn" id="add-domain-btn">Tambah</button>
+      </div>
+      <div class="admin-msg" id="admin-msg"></div>
+
+      <div class="domain-list" id="domain-list"></div>
+    </div>
+  </details>
+
   <div class="footer-note">
     Pengecekan dijalankan GitHub Actions tiap ±15 menit lewat jaringan probe pihak ketiga
     <a href="https://check-host.net" target="_blank" rel="noopener">check-host.net</a>, dari dua titik di Jakarta
-    dibandingkan satu titik di Singapura sebagai pembanding. Untuk menambah domain yang dipantau, edit
-    <code>domains.json</code> di repo. Bersifat indikatif, bukan data resmi Kominfo/Komdigi.
+    dibandingkan satu titik di Singapura sebagai pembanding. Bersifat indikatif, bukan data resmi Kominfo/Komdigi.
   </div>
 </div>
 
@@ -187,6 +281,186 @@ async function load() {
 }
 
 load();
+
+// ---- Admin panel: manage domains.json via GitHub API ----
+const GH_OWNER = "GabFx09";
+const GH_REPO = "file-autocheckweb";
+const GH_PATH = "domains.json";
+const GH_API = `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${GH_PATH}`;
+const PAT_KEY = "gh_pat_file_autocheckweb";
+
+const tokenSection = document.getElementById("token-section");
+const tokenActive = document.getElementById("token-active");
+const patInput = document.getElementById("pat-input");
+const patSaveBtn = document.getElementById("pat-save-btn");
+const patClearBtn = document.getElementById("pat-clear-btn");
+const newDomainInput = document.getElementById("new-domain-input");
+const addDomainBtn = document.getElementById("add-domain-btn");
+const adminMsg = document.getElementById("admin-msg");
+const domainListEl = document.getElementById("domain-list");
+
+function getToken() {
+  return localStorage.getItem(PAT_KEY) || "";
+}
+
+function setMsg(text, kind) {
+  adminMsg.textContent = text;
+  adminMsg.className = "admin-msg" + (kind ? " " + kind : "");
+}
+
+function refreshTokenUI() {
+  const has = !!getToken();
+  tokenSection.style.display = has ? "none" : "block";
+  tokenActive.style.display = has ? "block" : "none";
+}
+
+function b64DecodeUtf8(b64) {
+  const bin = atob(b64.replace(/\n/g, ""));
+  const bytes = Uint8Array.from(bin, (c) => c.charCodeAt(0));
+  return new TextDecoder("utf-8").decode(bytes);
+}
+
+function b64EncodeUtf8(str) {
+  const bytes = new TextEncoder().encode(str);
+  let bin = "";
+  bytes.forEach((b) => { bin += String.fromCharCode(b); });
+  return btoa(bin);
+}
+
+function normalizeDomain(raw) {
+  let s = (raw || "").trim().toLowerCase();
+  s = s.replace(/^[a-z]+:\/\//, "");
+  s = s.split("/")[0].split("?")[0].split(":")[0];
+  const re = /^([a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,}$/;
+  return re.test(s) ? s : null;
+}
+
+async function fetchDomainsFile() {
+  const res = await fetch(GH_API + "?_=" + Date.now(), {
+    headers: { Accept: "application/vnd.github+json" },
+    cache: "no-store",
+  });
+  if (!res.ok) throw new Error("Gagal memuat domains.json (HTTP " + res.status + ")");
+  const data = await res.json();
+  const list = JSON.parse(b64DecodeUtf8(data.content));
+  return { list, sha: data.sha };
+}
+
+async function renderDomainList() {
+  try {
+    const { list } = await fetchDomainsFile();
+    const token = getToken();
+    if (list.length === 0) {
+      domainListEl.innerHTML = '<div class="domain-row"><span>Belum ada domain.</span></div>';
+      return;
+    }
+    domainListEl.innerHTML = list.map((d) => `
+      <div class="domain-row">
+        <span class="dname">${escapeHtml(d)}</span>
+        ${token ? `<button class="secondary-btn" data-domain="${escapeHtml(d)}">Hapus</button>` : ""}
+      </div>`).join("");
+    domainListEl.querySelectorAll("button[data-domain]").forEach((btn) => {
+      btn.addEventListener("click", () => removeDomain(btn.getAttribute("data-domain")));
+    });
+  } catch (e) {
+    domainListEl.innerHTML = "";
+    setMsg(e.message, "error");
+  }
+}
+
+async function commitDomains(newList, message, retry = true) {
+  const token = getToken();
+  if (!token) {
+    setMsg("Simpan token GitHub dulu sebelum mengelola domain.", "error");
+    return false;
+  }
+  const { sha } = await fetchDomainsFile();
+  const body = {
+    message,
+    content: b64EncodeUtf8(JSON.stringify(newList, null, 2) + "\n"),
+    sha,
+    branch: "main",
+  };
+  const res = await fetch(GH_API, {
+    method: "PUT",
+    headers: {
+      Authorization: "Bearer " + token,
+      Accept: "application/vnd.github+json",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(body),
+  });
+  if (res.status === 409 && retry) {
+    return commitDomains(newList, message, false);
+  }
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    if (res.status === 401 || res.status === 403) {
+      throw new Error("Token tidak valid atau tidak punya izin write ke repo ini.");
+    }
+    throw new Error("Gagal menyimpan: " + (err.message || res.status));
+  }
+  return true;
+}
+
+patSaveBtn.addEventListener("click", () => {
+  const val = patInput.value.trim();
+  if (!val) return;
+  localStorage.setItem(PAT_KEY, val);
+  patInput.value = "";
+  refreshTokenUI();
+  setMsg("Token tersimpan di browser ini.", "success");
+  renderDomainList();
+});
+
+patClearBtn.addEventListener("click", () => {
+  localStorage.removeItem(PAT_KEY);
+  refreshTokenUI();
+  setMsg("Token dihapus dari browser ini.", "info");
+  renderDomainList();
+});
+
+addDomainBtn.addEventListener("click", async () => {
+  const domain = normalizeDomain(newDomainInput.value);
+  if (!domain) {
+    setMsg("Format domain tidak valid. Contoh yang benar: situsku.com", "error");
+    return;
+  }
+  addDomainBtn.disabled = true;
+  setMsg("Menyimpan...", "info");
+  try {
+    const { list } = await fetchDomainsFile();
+    if (list.includes(domain)) {
+      setMsg(`${domain} sudah ada di daftar.`, "info");
+    } else {
+      const newList = [...list, domain];
+      await commitDomains(newList, `Add ${domain} to monitored domains`);
+      newDomainInput.value = "";
+      setMsg(`${domain} ditambahkan. Pengecekan pertama akan berjalan otomatis dalam beberapa menit.`, "success");
+      await renderDomainList();
+    }
+  } catch (e) {
+    setMsg(e.message, "error");
+  } finally {
+    addDomainBtn.disabled = false;
+  }
+});
+
+async function removeDomain(domain) {
+  setMsg(`Menghapus ${domain}...`, "info");
+  try {
+    const { list } = await fetchDomainsFile();
+    const newList = list.filter((d) => d !== domain);
+    await commitDomains(newList, `Remove ${domain} from monitored domains`);
+    setMsg(`${domain} dihapus dari daftar pemantauan.`, "success");
+    await renderDomainList();
+  } catch (e) {
+    setMsg(e.message, "error");
+  }
+}
+
+refreshTokenUI();
+renderDomainList();
 </script>
 </body>
 </html>
