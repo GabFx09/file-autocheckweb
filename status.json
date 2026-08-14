@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-08-14T01:47:57.366Z",
+  "generated_at": "2026-08-14T02:03:35.493Z",
   "sites": {
     "totomantapsuper.icu": {
       "domain": "totomantapsuper.icu",
-      "checked_at": "2026-08-14T01:47:56.365Z",
+      "checked_at": "2026-08-14T02:03:30.253Z",
       "verdict": "accessible",
       "nodes": {
         "id1.node.check-host.net": {
@@ -11,7 +11,7 @@
           "isIndonesia": true,
           "ok": true,
           "httpCode": "200",
-          "timeSec": 0.148,
+          "timeSec": 0.143,
           "message": "OK"
         },
         "id2.node.check-host.net": {
@@ -19,7 +19,7 @@
           "isIndonesia": true,
           "ok": true,
           "httpCode": "200",
-          "timeSec": 0.41,
+          "timeSec": 0.186,
           "message": "OK"
         },
         "sg1.node.check-host.net": {
@@ -27,7 +27,38 @@
           "isIndonesia": false,
           "ok": true,
           "httpCode": "200",
-          "timeSec": 0.091,
+          "timeSec": 0.436,
+          "message": "OK"
+        }
+      }
+    },
+    "totomantapsuper.com": {
+      "domain": "totomantapsuper.com",
+      "checked_at": "2026-08-14T02:03:34.492Z",
+      "verdict": "accessible",
+      "nodes": {
+        "id1.node.check-host.net": {
+          "label": "Jakarta, Indonesia (node 1)",
+          "isIndonesia": true,
+          "ok": true,
+          "httpCode": "200",
+          "timeSec": 0.784,
+          "message": "OK"
+        },
+        "id2.node.check-host.net": {
+          "label": "Jakarta, Indonesia (node 2)",
+          "isIndonesia": true,
+          "ok": true,
+          "httpCode": "200",
+          "timeSec": 0.792,
+          "message": "OK"
+        },
+        "sg1.node.check-host.net": {
+          "label": "Singapore (pembanding)",
+          "isIndonesia": false,
+          "ok": true,
+          "httpCode": "200",
+          "timeSec": 0.906,
           "message": "OK"
         }
       }
