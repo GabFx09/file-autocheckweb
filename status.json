@@ -1,0 +1,31 @@
+{
+  "domain": "totomantapsuper.icu",
+  "checked_at": "2026-08-14T01:29:54.118Z",
+  "verdict": "accessible",
+  "nodes": {
+    "id1.node.check-host.net": {
+      "label": "Jakarta, Indonesia (node 1)",
+      "isIndonesia": true,
+      "ok": true,
+      "httpCode": "200",
+      "timeSec": 0.106,
+      "message": "OK"
+    },
+    "id2.node.check-host.net": {
+      "label": "Jakarta, Indonesia (node 2)",
+      "isIndonesia": true,
+      "ok": true,
+      "httpCode": "200",
+      "timeSec": 0.143,
+      "message": "OK"
+    },
+    "sg1.node.check-host.net": {
+      "label": "Singapore (pembanding)",
+      "isIndonesia": false,
+      "ok": true,
+      "httpCode": "200",
+      "timeSec": 0.112,
+      "message": "OK"
+    }
+  }
+}

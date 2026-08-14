@@ -1,0 +1,43 @@
+name: Check website status
+
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch: {}
+  push:
+    branches: [main]
+    paths:
+      - "scripts/check-status.mjs"
+      - ".github/workflows/check-status.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: check-status
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Run status check (from Indonesia + reference node)
+        run: node scripts/check-status.mjs
+
+      - name: Commit status.json if changed
+        run: |
+          if git diff --quiet -- status.json; then
+            echo "No change in status.json"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add status.json
+          git commit -m "chore: update status.json [skip ci]"
+          git push
