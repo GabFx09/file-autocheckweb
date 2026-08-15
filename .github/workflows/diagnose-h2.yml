@@ -1,0 +1,37 @@
+name: Diagnose HTTP/2 vs HTTP/1.1 through residential proxy
+
+on:
+  workflow_dispatch:
+    inputs:
+      samples:
+        description: "Number of exit IPs to sample"
+        default: "8"
+      target_host:
+        description: "Hostname to test (no https://)"
+        default: "totomantap.top"
+      asn:
+        description: "ASN number to target instead of country-wide ID (e.g. 23679). Leave blank for country-wide."
+        default: ""
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Sample proxy pool (h1 vs h2 ALPN)
+        env:
+          WEBSHARE_USERNAME: ${{ secrets.WEBSHARE_USERNAME }}
+          WEBSHARE_PASSWORD: ${{ secrets.WEBSHARE_PASSWORD }}
+          DIAG_SAMPLES: ${{ github.event.inputs.samples }}
+          DIAG_TARGET_HOST: ${{ github.event.inputs.target_host }}
+          DIAG_ASN: ${{ github.event.inputs.asn }}
+        run: node scripts/diagnose-h2.mjs
