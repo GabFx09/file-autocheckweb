@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-08-15T17:35:36.135Z",
+  "generated_at": "2026-08-15T17:56:04.410Z",
   "sites": {
     "totomantapsuper.icu": {
       "domain": "totomantapsuper.icu",
-      "checked_at": "2026-08-15T17:34:50.028Z",
+      "checked_at": "2026-08-15T17:55:20.415Z",
       "verdict": "accessible",
       "nodes": {
         "id-residential-proxy": {
@@ -11,7 +11,7 @@
           "isIndonesia": true,
           "ok": true,
           "httpCode": "200",
-          "timeSec": 1.526,
+          "timeSec": 1.759,
           "message": "4/4 ISP residensial berhasil akses"
         },
         "id-residential-proxy-asn-23679": {
@@ -19,7 +19,7 @@
           "isIndonesia": true,
           "ok": true,
           "httpCode": "200",
-          "timeSec": 1.433,
+          "timeSec": 1.562,
           "message": "4/4 AS23679 berhasil akses"
         },
         "id1.node.check-host.net": {
@@ -27,7 +27,7 @@
           "isIndonesia": true,
           "ok": true,
           "httpCode": "200",
-          "timeSec": 0.14,
+          "timeSec": 0.157,
           "message": "OK"
         },
         "id2.node.check-host.net": {
@@ -35,7 +35,7 @@
           "isIndonesia": true,
           "ok": true,
           "httpCode": "200",
-          "timeSec": 0.23,
+          "timeSec": 0.195,
           "message": "OK"
         },
         "sg1.node.check-host.net": {
@@ -43,14 +43,14 @@
           "isIndonesia": false,
           "ok": true,
           "httpCode": "200",
-          "timeSec": 0.112,
+          "timeSec": 0.135,
           "message": "OK"
         }
       }
     },
     "ittbangjago.online": {
       "domain": "ittbangjago.online",
-      "checked_at": "2026-08-15T17:35:11.713Z",
+      "checked_at": "2026-08-15T17:55:38.206Z",
       "verdict": "accessible",
       "nodes": {
         "id-residential-proxy": {
@@ -58,7 +58,7 @@
           "isIndonesia": true,
           "ok": true,
           "httpCode": "200",
-          "timeSec": 1.732,
+          "timeSec": 2.094,
           "message": "4/4 ISP residensial berhasil akses"
         },
         "id-residential-proxy-asn-23679": {
@@ -66,15 +66,15 @@
           "isIndonesia": true,
           "ok": true,
           "httpCode": "200",
-          "timeSec": 2.054,
-          "message": "4/4 AS23679 berhasil akses"
+          "timeSec": 1.484,
+          "message": "3/4 AS23679 berhasil akses"
         },
         "id1.node.check-host.net": {
           "label": "Jakarta, Indonesia (node 1, datacenter)",
           "isIndonesia": true,
           "ok": true,
           "httpCode": "200",
-          "timeSec": 0.19,
+          "timeSec": 0.181,
           "message": "OK"
         },
         "id2.node.check-host.net": {
@@ -82,7 +82,7 @@
           "isIndonesia": true,
           "ok": true,
           "httpCode": "200",
-          "timeSec": 0.233,
+          "timeSec": 0.199,
           "message": "OK"
         },
         "sg1.node.check-host.net": {
@@ -90,14 +90,14 @@
           "isIndonesia": false,
           "ok": true,
           "httpCode": "200",
-          "timeSec": 0.184,
+          "timeSec": 1.169,
           "message": "OK"
         }
       }
     },
     "totomantap.top": {
       "domain": "totomantap.top",
-      "checked_at": "2026-08-15T17:35:35.134Z",
+      "checked_at": "2026-08-15T17:56:03.410Z",
       "verdict": "accessible",
       "nodes": {
         "id-residential-proxy": {
@@ -105,7 +105,7 @@
           "isIndonesia": true,
           "ok": true,
           "httpCode": "200",
-          "timeSec": 1.501,
+          "timeSec": 1.527,
           "message": "4/4 ISP residensial berhasil akses"
         },
         "id-residential-proxy-asn-23679": {
@@ -113,7 +113,7 @@
           "isIndonesia": true,
           "ok": true,
           "httpCode": "200",
-          "timeSec": 3.552,
+          "timeSec": 2.556,
           "message": "4/4 AS23679 berhasil akses"
         },
         "id1.node.check-host.net": {
@@ -121,7 +121,7 @@
           "isIndonesia": true,
           "ok": true,
           "httpCode": "200",
-          "timeSec": 4.007,
+          "timeSec": 0.15,
           "message": "OK"
         },
         "id2.node.check-host.net": {
@@ -129,7 +129,7 @@
           "isIndonesia": true,
           "ok": true,
           "httpCode": "200",
-          "timeSec": 0.24,
+          "timeSec": 0.165,
           "message": "OK"
         },
         "sg1.node.check-host.net": {
@@ -137,7 +137,7 @@
           "isIndonesia": false,
           "ok": true,
           "httpCode": "200",
-          "timeSec": 0.18,
+          "timeSec": 1.499,
           "message": "OK"
         }
       }
