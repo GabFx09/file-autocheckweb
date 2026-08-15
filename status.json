@@ -1,33 +1,33 @@
 {
-  "generated_at": "2026-08-15T20:37:24.897Z",
+  "generated_at": "2026-08-15T20:52:36.326Z",
   "sites": {
     "totomantapsuper.icu": {
       "domain": "totomantapsuper.icu",
-      "checked_at": "2026-08-15T20:36:49.586Z",
-      "verdict": "accessible",
+      "checked_at": "2026-08-15T20:51:53.278Z",
+      "verdict": "blocked_on_isp",
       "nodes": {
         "id-residential-proxy": {
           "label": "ISP Residensial Indonesia (Webshare, nasional)",
           "isIndonesia": true,
           "ok": true,
           "httpCode": null,
-          "timeSec": 1.31,
+          "timeSec": 1.81,
           "message": "4/4 ISP residensial berhasil akses"
         },
         "id-residential-proxy-asn-23679": {
           "label": "ISP Residensial Indonesia (AS23679 PT Media Antar Nusa (Medan))",
           "isIndonesia": true,
-          "ok": true,
+          "ok": false,
           "httpCode": null,
-          "timeSec": 1.373,
-          "message": "4/4 AS23679 berhasil akses"
+          "timeSec": 1.318,
+          "message": "2/4 AS23679 berhasil akses (ada yang gagal/diblokir)"
         },
         "id-residential-proxy-asn-23693": {
           "label": "ISP Residensial Indonesia (AS23693 PT. Telekomunikasi Selular (Telkomsel))",
           "isIndonesia": true,
           "ok": true,
           "httpCode": null,
-          "timeSec": 2.255,
+          "timeSec": 1.046,
           "message": "4/4 AS23693 berhasil akses"
         },
         "id1.node.check-host.net": {
@@ -35,7 +35,7 @@
           "isIndonesia": true,
           "ok": true,
           "httpCode": "200",
-          "timeSec": 0.387,
+          "timeSec": 0.114,
           "message": "OK"
         },
         "id2.node.check-host.net": {
@@ -43,7 +43,7 @@
           "isIndonesia": true,
           "ok": true,
           "httpCode": "200",
-          "timeSec": 0.154,
+          "timeSec": 0.174,
           "message": "OK"
         },
         "sg1.node.check-host.net": {
@@ -51,14 +51,14 @@
           "isIndonesia": false,
           "ok": true,
           "httpCode": "200",
-          "timeSec": 0.1,
+          "timeSec": 0.101,
           "message": "OK"
         }
       }
     },
     "ittbangjago.online": {
       "domain": "ittbangjago.online",
-      "checked_at": "2026-08-15T20:37:06.992Z",
+      "checked_at": "2026-08-15T20:52:14.958Z",
       "verdict": "accessible",
       "nodes": {
         "id-residential-proxy": {
@@ -66,7 +66,7 @@
           "isIndonesia": true,
           "ok": true,
           "httpCode": null,
-          "timeSec": 0.716,
+          "timeSec": 5.559,
           "message": "4/4 ISP residensial berhasil akses"
         },
         "id-residential-proxy-asn-23679": {
@@ -74,7 +74,7 @@
           "isIndonesia": true,
           "ok": true,
           "httpCode": null,
-          "timeSec": 1.828,
+          "timeSec": 0.917,
           "message": "4/4 AS23679 berhasil akses"
         },
         "id-residential-proxy-asn-23693": {
@@ -82,7 +82,7 @@
           "isIndonesia": true,
           "ok": true,
           "httpCode": null,
-          "timeSec": 1.07,
+          "timeSec": 0.966,
           "message": "4/4 AS23693 berhasil akses"
         },
         "id1.node.check-host.net": {
@@ -90,7 +90,7 @@
           "isIndonesia": true,
           "ok": true,
           "httpCode": "200",
-          "timeSec": 0.175,
+          "timeSec": 0.165,
           "message": "OK"
         },
         "id2.node.check-host.net": {
@@ -98,7 +98,7 @@
           "isIndonesia": true,
           "ok": true,
           "httpCode": "200",
-          "timeSec": 0.185,
+          "timeSec": 0.473,
           "message": "OK"
         },
         "sg1.node.check-host.net": {
@@ -106,38 +106,38 @@
           "isIndonesia": false,
           "ok": true,
           "httpCode": "200",
-          "timeSec": 0.119,
+          "timeSec": 0.106,
           "message": "OK"
         }
       }
     },
     "totomantap.top": {
       "domain": "totomantap.top",
-      "checked_at": "2026-08-15T20:37:23.895Z",
-      "verdict": "accessible",
+      "checked_at": "2026-08-15T20:52:35.325Z",
+      "verdict": "blocked_on_isp",
       "nodes": {
         "id-residential-proxy": {
           "label": "ISP Residensial Indonesia (Webshare, nasional)",
           "isIndonesia": true,
           "ok": true,
           "httpCode": null,
-          "timeSec": 0.9,
-          "message": "4/4 ISP residensial berhasil akses"
+          "timeSec": 1.627,
+          "message": "3/4 ISP residensial berhasil akses"
         },
         "id-residential-proxy-asn-23679": {
           "label": "ISP Residensial Indonesia (AS23679 PT Media Antar Nusa (Medan))",
           "isIndonesia": true,
-          "ok": true,
+          "ok": false,
           "httpCode": null,
-          "timeSec": 1.379,
-          "message": "4/4 AS23679 berhasil akses"
+          "timeSec": 1.376,
+          "message": "3/4 AS23679 berhasil akses (ada yang gagal/diblokir)"
         },
         "id-residential-proxy-asn-23693": {
           "label": "ISP Residensial Indonesia (AS23693 PT. Telekomunikasi Selular (Telkomsel))",
           "isIndonesia": true,
           "ok": true,
           "httpCode": null,
-          "timeSec": 0.874,
+          "timeSec": 1.145,
           "message": "4/4 AS23693 berhasil akses"
         },
         "id1.node.check-host.net": {
@@ -145,7 +145,7 @@
           "isIndonesia": true,
           "ok": true,
           "httpCode": "200",
-          "timeSec": 0.367,
+          "timeSec": 0.123,
           "message": "OK"
         },
         "id2.node.check-host.net": {
@@ -153,7 +153,7 @@
           "isIndonesia": true,
           "ok": true,
           "httpCode": "200",
-          "timeSec": 0.255,
+          "timeSec": 0.212,
           "message": "OK"
         },
         "sg1.node.check-host.net": {
@@ -161,7 +161,7 @@
           "isIndonesia": false,
           "ok": true,
           "httpCode": "200",
-          "timeSec": 0.11,
+          "timeSec": 0.094,
           "message": "OK"
         }
       }
