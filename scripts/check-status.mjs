@@ -141,6 +141,15 @@ function computeVerdict(nodes) {
 // so we sample several independent exit IPs and require a majority to fail.
 const PROXY_SAMPLES = 4;
 
+// Known-problem-ASN checks need more samples than the country-wide check.
+// Confirmed 2026-08-15: the interception on these ASNs is genuinely
+// intermittent (observed 10-40% per-sample fail rates on actually-blocked
+// domains) but has ~0% baseline noise on definitely-clean domains (25/25 and
+// 15/15 samples clean for google.com on AS23693/AS23679) — so a failure here
+// is a trustworthy signal, the problem is purely catch rate. At 4 samples,
+// P(catching a 15%-intermittent block) is only ~48%; at 12 it's ~86%.
+const ASN_PROXY_SAMPLES = 12;
+
 function connectThroughProxy(auth, targetHost, targetPort) {
   return new Promise((resolve, reject) => {
     const socket = net.connect(PROXY_PORT, PROXY_HOST);
@@ -248,27 +257,27 @@ function buildProxyAuth(username, password, targeting) {
   return { username: `${username}-${targeting}-rotate`, password };
 }
 
-async function sampleProxyMajority(auth, targetUrl, label, { anyFailureBlocks = false } = {}) {
+async function sampleProxyMajority(auth, targetUrl, label, { anyFailureBlocks = false, samples: sampleCount = PROXY_SAMPLES } = {}) {
   const samples = [];
-  for (let i = 0; i < PROXY_SAMPLES; i++) {
+  for (let i = 0; i < sampleCount; i++) {
     samples.push(await residentialSampleOnce(auth, targetUrl));
   }
 
   const okCount = samples.filter((s) => s.ok).length;
-  const failCount = PROXY_SAMPLES - okCount;
+  const failCount = sampleCount - okCount;
   // Country-wide sampling needs a majority to fail — a single dead/flaky exit
   // shouldn't flip a nationally-accessible site to "blocked". Known-problem
   // ASN checks flip on any single failure instead: a captured TLS interception
   // (certificate swapped for an ISP's own filter page) is a positive, unambiguous
   // signal of blocking, not noise — requiring a majority would mask genuinely
-  // intermittent ISP-level blocks confirmed to occur at only a ~15-25% rate.
-  const blocked = anyFailureBlocks ? failCount > 0 : failCount > PROXY_SAMPLES / 2;
+  // intermittent ISP-level blocks confirmed to occur at only a ~10-40% rate.
+  const blocked = anyFailureBlocks ? failCount > 0 : failCount > sampleCount / 2;
   const representative = samples.find((s) => s.ok) || samples[samples.length - 1];
 
   return {
     ...representative,
     ok: !blocked,
-    message: `${okCount}/${PROXY_SAMPLES} ${label} berhasil akses${blocked ? " (ada yang gagal/diblokir)" : ""}`,
+    message: `${okCount}/${sampleCount} ${label} berhasil akses${blocked ? " (ada yang gagal/diblokir)" : ""}`,
   };
 }
 
@@ -289,7 +298,7 @@ async function checkViaAsnProxy(domain, asn) {
 
   const auth = buildProxyAuth(username, password, `asn_${asn}`);
   const targetUrl = `https://${domain}/`;
-  return sampleProxyMajority(auth, targetUrl, `AS${asn}`, { anyFailureBlocks: true });
+  return sampleProxyMajority(auth, targetUrl, `AS${asn}`, { anyFailureBlocks: true, samples: ASN_PROXY_SAMPLES });
 }
 
 async function checkDomain(domain) {
