@@ -1,0 +1,33 @@
+name: Diagnose residential proxy pool
+
+on:
+  workflow_dispatch:
+    inputs:
+      samples:
+        description: "Number of exit IPs to sample"
+        default: "12"
+      target:
+        description: "URL to test through each exit IP"
+        default: "https://totomantap.top/"
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Sample proxy pool
+        env:
+          WEBSHARE_USERNAME: ${{ secrets.WEBSHARE_USERNAME }}
+          WEBSHARE_PASSWORD: ${{ secrets.WEBSHARE_PASSWORD }}
+          DIAG_SAMPLES: ${{ github.event.inputs.samples }}
+          DIAG_TARGET: ${{ github.event.inputs.target }}
+        run: node scripts/diagnose-proxy.mjs
