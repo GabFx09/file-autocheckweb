@@ -5,7 +5,8 @@
 // (or recovers).
 
 import fs from "node:fs/promises";
-import { ProxyAgent, fetch as undiciFetch } from "undici";
+import net from "node:net";
+import tls from "node:tls";
 
 const ID_NODES = ["id1.node.check-host.net", "id2.node.check-host.net"];
 const REF_NODE = "sg1.node.check-host.net";
@@ -127,28 +128,85 @@ function computeVerdict(nodes) {
 // so we sample several independent exit IPs and require a majority to fail.
 const PROXY_SAMPLES = 4;
 
-async function residentialFetchOnce(proxyUrl, targetUrl) {
-  // Fresh ProxyAgent per sample: undici pools/reuses the proxy tunnel by default,
-  // which would reuse the same exit IP across samples and defeat the point.
-  const dispatcher = new ProxyAgent(proxyUrl);
-  try {
-    const start = Date.now();
-    const res = await undiciFetch(targetUrl, {
-      dispatcher,
-      signal: AbortSignal.timeout(20000),
+function connectThroughProxy(auth, targetHost, targetPort) {
+  return new Promise((resolve, reject) => {
+    const socket = net.connect(PROXY_PORT, PROXY_HOST);
+    const authHeader = Buffer.from(`${auth.username}:${auth.password}`).toString("base64");
+    const connectReq =
+      `CONNECT ${targetHost}:${targetPort} HTTP/1.1\r\n` +
+      `Host: ${targetHost}:${targetPort}\r\n` +
+      `Proxy-Authorization: Basic ${authHeader}\r\n` +
+      `Proxy-Connection: Keep-Alive\r\n\r\n`;
+
+    let buf = "";
+    const onData = (chunk) => {
+      buf += chunk.toString("latin1");
+      if (buf.includes("\r\n\r\n")) {
+        socket.removeListener("data", onData);
+        const statusLine = buf.split("\r\n")[0];
+        if (/\s200\s/.test(statusLine)) {
+          resolve(socket);
+        } else {
+          socket.destroy();
+          reject(new Error(`Proxy CONNECT failed: ${statusLine}`));
+        }
+      }
+    };
+    socket.on("data", onData);
+    socket.on("error", reject);
+    socket.setTimeout(15000, () => {
+      socket.destroy();
+      reject(new Error("Proxy CONNECT timed out"));
     });
-    return { ok: res.ok || res.status < 500, httpCode: String(res.status), timeSec: (Date.now() - start) / 1000, message: "OK" };
-  } finally {
-    await dispatcher.close();
-  }
+    socket.write(connectReq);
+  });
 }
 
-async function residentialSampleOnce(proxyUrl, targetUrl) {
+// Raw CONNECT + TLS handshake instead of undici's fetch: offering ALPN h2
+// (like a real browser negotiating with Cloudflare) is required to reproduce
+// the actual block. Confirmed 2026-08-15: some Indonesian carrier networks
+// (seen on Telkomsel exits) run a TLS-intercepting middlebox that only
+// triggers on browser-like (h2-offering) connections and substitutes its own
+// "Internet Positif" filter certificate (altnames seen: internetbaik.telkomsel.com,
+// internettepat.telkomsel.com) instead of completing the real handshake with
+// Cloudflare. An http/1.1-only client (curl.exe, or undici's fetch without
+// allowH2) sails through untouched and misses the block entirely — which is
+// why this checker previously read "accessible" while real users were blocked.
+// A successful, certificate-validated handshake is sufficient signal by
+// itself; we don't need to parse the HTTP/2 response to know the connection
+// wasn't intercepted.
+async function residentialFetchOnce(auth, targetUrl) {
+  const { hostname } = new URL(targetUrl);
+  const start = Date.now();
+  const rawSocket = await connectThroughProxy(auth, hostname, 443);
+  return new Promise((resolve, reject) => {
+    const tlsSocket = tls.connect({
+      socket: rawSocket,
+      servername: hostname,
+      ALPNProtocols: ["h2", "http/1.1"],
+      timeout: 20000,
+    });
+    tlsSocket.on("secureConnect", () => {
+      tlsSocket.destroy();
+      resolve({ ok: true, httpCode: null, timeSec: (Date.now() - start) / 1000, message: "OK" });
+    });
+    tlsSocket.on("error", (err) => {
+      tlsSocket.destroy();
+      reject(err);
+    });
+    tlsSocket.on("timeout", () => {
+      tlsSocket.destroy();
+      reject(new Error("TLS handshake timed out"));
+    });
+  });
+}
+
+async function residentialSampleOnce(auth, targetUrl) {
   // Retry once per sample: the shared residential pool occasionally hands out a
   // dead exit IP, which would otherwise read as a false "blocked" sample.
   for (let i = 0; i < 2; i++) {
     try {
-      return await residentialFetchOnce(proxyUrl, targetUrl);
+      return await residentialFetchOnce(auth, targetUrl);
     } catch (err) {
       if (i === 1) {
         return { ok: false, httpCode: null, timeSec: null, message: err.message || "Gagal terhubung lewat proxy" };
@@ -157,17 +215,17 @@ async function residentialSampleOnce(proxyUrl, targetUrl) {
   }
 }
 
-function buildProxyUrl(username, password, targeting) {
+function buildProxyAuth(username, password, targeting) {
   // Webshare's targeting segment must be uppercase for a country code (e.g.
   // "-ID-rotate"); lowercase silently routes to an arbitrary country instead
   // of erroring. ASN targeting uses a different segment: "asn_<number>".
-  return `http://${username}-${targeting}-rotate:${password}@${PROXY_HOST}:${PROXY_PORT}`;
+  return { username: `${username}-${targeting}-rotate`, password };
 }
 
-async function sampleProxyMajority(proxyUrl, targetUrl, label) {
+async function sampleProxyMajority(auth, targetUrl, label) {
   const samples = [];
   for (let i = 0; i < PROXY_SAMPLES; i++) {
-    samples.push(await residentialSampleOnce(proxyUrl, targetUrl));
+    samples.push(await residentialSampleOnce(auth, targetUrl));
   }
 
   const okCount = samples.filter((s) => s.ok).length;
@@ -187,9 +245,9 @@ async function checkViaResidentialProxy(domain) {
   const password = process.env.WEBSHARE_PASSWORD;
   if (!username || !password) return null;
 
-  const proxyUrl = buildProxyUrl(username, password, "ID");
+  const auth = buildProxyAuth(username, password, "ID");
   const targetUrl = `https://${domain}/`;
-  return sampleProxyMajority(proxyUrl, targetUrl, "ISP residensial");
+  return sampleProxyMajority(auth, targetUrl, "ISP residensial");
 }
 
 async function checkViaAsnProxy(domain, asn) {
@@ -197,9 +255,9 @@ async function checkViaAsnProxy(domain, asn) {
   const password = process.env.WEBSHARE_PASSWORD;
   if (!username || !password) return null;
 
-  const proxyUrl = buildProxyUrl(username, password, `asn_${asn}`);
+  const auth = buildProxyAuth(username, password, `asn_${asn}`);
   const targetUrl = `https://${domain}/`;
-  return sampleProxyMajority(proxyUrl, targetUrl, `AS${asn}`);
+  return sampleProxyMajority(auth, targetUrl, `AS${asn}`);
 }
 
 async function checkDomain(domain) {
