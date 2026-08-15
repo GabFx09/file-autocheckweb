@@ -102,7 +102,9 @@ async function checkViaResidentialProxy(domain) {
   const password = process.env.WEBSHARE_PASSWORD;
   if (!username || !password) return null;
 
-  const proxyUrl = `http://${username}-id-rotate:${password}@${PROXY_HOST}:${PROXY_PORT}`;
+  // Webshare's country code in the username must be uppercase (e.g. "-ID-rotate");
+  // lowercase silently routes to an arbitrary country instead of erroring.
+  const proxyUrl = `http://${username}-ID-rotate:${password}@${PROXY_HOST}:${PROXY_PORT}`;
   const dispatcher = new ProxyAgent(proxyUrl);
   const targetUrl = `https://${domain}/`;
 
