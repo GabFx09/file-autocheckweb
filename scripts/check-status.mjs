@@ -435,7 +435,18 @@ async function main() {
     console.log(`Checking ${domain}...`);
     let result;
     try {
-      result = await checkDomain(domain);
+      // Hard backstop: a run has silently stalled partway through the domain
+      // loop before (2026-08-15, root cause not fully isolated — some
+      // individual sample's promise apparently never settled) and produced
+      // no status.json at all for the whole run. A per-domain timeout
+      // guarantees the loop always finishes and writes *something*, even if
+      // one domain's checks are hanging.
+      result = await Promise.race([
+        checkDomain(domain),
+        new Promise((_, reject) =>
+          setTimeout(() => reject(new Error("Timed out after 120s checking this domain")), 120000)
+        ),
+      ]);
     } catch (err) {
       console.error(`Gagal cek ${domain}:`, err.message);
       continue;
@@ -479,7 +490,17 @@ async function main() {
   }
 }
 
-main().catch((err) => {
-  console.error(err);
-  process.exit(1);
-});
+main()
+  .then(() => {
+    // A per-domain check that timed out (see the Promise.race above) leaves
+    // its underlying sockets/timers abandoned rather than cancelled, which
+    // can keep the event loop alive indefinitely and hang the whole process
+    // even after status.json has been written successfully. Force exit once
+    // main() genuinely completes so a slow/stuck sample can't stall the
+    // GitHub Actions job forever.
+    process.exit(0);
+  })
+  .catch((err) => {
+    console.error(err);
+    process.exit(1);
+  });
