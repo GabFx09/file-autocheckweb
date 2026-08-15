@@ -97,6 +97,43 @@ function computeVerdict(nodes) {
   return "partial";
 }
 
+// Trust Positif blocking isn't enforced uniformly across Indonesian ISPs (confirmed:
+// totomantap.top failed on AS23679 PT Media Antar Nusa via VPN, but passed through
+// AS7713 Telkom and AS9341 IconPLUS via this proxy pool). A single rotating-IP sample
+// can land on a non-enforcing ISP and misread a genuinely-blocked site as accessible,
+// so we sample several independent exit IPs and require a majority to fail.
+const PROXY_SAMPLES = 4;
+
+async function residentialFetchOnce(proxyUrl, targetUrl) {
+  // Fresh ProxyAgent per sample: undici pools/reuses the proxy tunnel by default,
+  // which would reuse the same exit IP across samples and defeat the point.
+  const dispatcher = new ProxyAgent(proxyUrl);
+  try {
+    const start = Date.now();
+    const res = await undiciFetch(targetUrl, {
+      dispatcher,
+      signal: AbortSignal.timeout(20000),
+    });
+    return { ok: res.ok || res.status < 500, httpCode: String(res.status), timeSec: (Date.now() - start) / 1000, message: "OK" };
+  } finally {
+    await dispatcher.close();
+  }
+}
+
+async function residentialSampleOnce(proxyUrl, targetUrl) {
+  // Retry once per sample: the shared residential pool occasionally hands out a
+  // dead exit IP, which would otherwise read as a false "blocked" sample.
+  for (let i = 0; i < 2; i++) {
+    try {
+      return await residentialFetchOnce(proxyUrl, targetUrl);
+    } catch (err) {
+      if (i === 1) {
+        return { ok: false, httpCode: null, timeSec: null, message: err.message || "Gagal terhubung lewat proxy" };
+      }
+    }
+  }
+}
+
 async function checkViaResidentialProxy(domain) {
   const username = process.env.WEBSHARE_USERNAME;
   const password = process.env.WEBSHARE_PASSWORD;
@@ -105,33 +142,23 @@ async function checkViaResidentialProxy(domain) {
   // Webshare's country code in the username must be uppercase (e.g. "-ID-rotate");
   // lowercase silently routes to an arbitrary country instead of erroring.
   const proxyUrl = `http://${username}-ID-rotate:${password}@${PROXY_HOST}:${PROXY_PORT}`;
-  const dispatcher = new ProxyAgent(proxyUrl);
   const targetUrl = `https://${domain}/`;
 
-  const attempt = async () => {
-    const start = Date.now();
-    const res = await undiciFetch(targetUrl, {
-      dispatcher,
-      signal: AbortSignal.timeout(20000),
-    });
-    return { ok: res.ok || res.status < 500, httpCode: String(res.status), timeSec: (Date.now() - start) / 1000, message: "OK" };
-  };
-
-  try {
-    // Retry once: the free/shared residential pool occasionally has a dead
-    // exit IP, which would otherwise read as a false "blocked" verdict.
-    for (let i = 0; i < 2; i++) {
-      try {
-        return await attempt();
-      } catch (err) {
-        if (i === 1) {
-          return { ok: false, httpCode: null, timeSec: null, message: err.message || "Gagal terhubung lewat proxy" };
-        }
-      }
-    }
-  } finally {
-    await dispatcher.close();
+  const samples = [];
+  for (let i = 0; i < PROXY_SAMPLES; i++) {
+    samples.push(await residentialSampleOnce(proxyUrl, targetUrl));
   }
+
+  const okCount = samples.filter((s) => s.ok).length;
+  const failCount = PROXY_SAMPLES - okCount;
+  const blocked = failCount > PROXY_SAMPLES / 2;
+  const representative = samples.find((s) => s.ok) || samples[samples.length - 1];
+
+  return {
+    ...representative,
+    ok: !blocked,
+    message: `${okCount}/${PROXY_SAMPLES} ISP residensial berhasil akses${blocked ? " (mayoritas gagal)" : ""}`,
+  };
 }
 
 async function checkDomain(domain) {
