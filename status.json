@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-08-15T04:52:36.326Z",
+  "generated_at": "2026-08-15T04:54:24.471Z",
   "sites": {
     "totomantapsuper.icu": {
       "domain": "totomantapsuper.icu",
-      "checked_at": "2026-08-15T04:52:22.826Z",
+      "checked_at": "2026-08-15T04:54:09.192Z",
       "verdict": "accessible",
       "nodes": {
         "id-residential-proxy": {
@@ -11,7 +11,7 @@
           "isIndonesia": true,
           "ok": true,
           "httpCode": "200",
-          "timeSec": 2.514,
+          "timeSec": 1.825,
           "message": "OK"
         },
         "id1.node.check-host.net": {
@@ -19,7 +19,7 @@
           "isIndonesia": true,
           "ok": true,
           "httpCode": "200",
-          "timeSec": 0.122,
+          "timeSec": 0.148,
           "message": "OK"
         },
         "id2.node.check-host.net": {
@@ -27,7 +27,7 @@
           "isIndonesia": true,
           "ok": true,
           "httpCode": "200",
-          "timeSec": 0.178,
+          "timeSec": 0.204,
           "message": "OK"
         },
         "sg1.node.check-host.net": {
@@ -35,14 +35,14 @@
           "isIndonesia": false,
           "ok": true,
           "httpCode": "200",
-          "timeSec": 0.091,
+          "timeSec": 0.126,
           "message": "OK"
         }
       }
     },
     "ittbangjago.online": {
       "domain": "ittbangjago.online",
-      "checked_at": "2026-08-15T04:52:28.968Z",
+      "checked_at": "2026-08-15T04:54:17.367Z",
       "verdict": "accessible",
       "nodes": {
         "id-residential-proxy": {
@@ -50,7 +50,7 @@
           "isIndonesia": true,
           "ok": true,
           "httpCode": "200",
-          "timeSec": 1.878,
+          "timeSec": 3.933,
           "message": "OK"
         },
         "id1.node.check-host.net": {
@@ -58,7 +58,7 @@
           "isIndonesia": true,
           "ok": true,
           "httpCode": "200",
-          "timeSec": 0.205,
+          "timeSec": 0.185,
           "message": "OK"
         },
         "id2.node.check-host.net": {
@@ -66,7 +66,7 @@
           "isIndonesia": true,
           "ok": true,
           "httpCode": "200",
-          "timeSec": 0.186,
+          "timeSec": 0.216,
           "message": "OK"
         },
         "sg1.node.check-host.net": {
@@ -74,14 +74,14 @@
           "isIndonesia": false,
           "ok": true,
           "httpCode": "200",
-          "timeSec": 0.14,
+          "timeSec": 0.137,
           "message": "OK"
         }
       }
     },
     "totomantap.top": {
       "domain": "totomantap.top",
-      "checked_at": "2026-08-15T04:52:35.326Z",
+      "checked_at": "2026-08-15T04:54:23.471Z",
       "verdict": "accessible",
       "nodes": {
         "id-residential-proxy": {
@@ -89,7 +89,7 @@
           "isIndonesia": true,
           "ok": true,
           "httpCode": "200",
-          "timeSec": 2.081,
+          "timeSec": 1.794,
           "message": "OK"
         },
         "id1.node.check-host.net": {
@@ -97,7 +97,7 @@
           "isIndonesia": true,
           "ok": true,
           "httpCode": "200",
-          "timeSec": 0.131,
+          "timeSec": 0.44,
           "message": "OK"
         },
         "id2.node.check-host.net": {
@@ -105,7 +105,7 @@
           "isIndonesia": true,
           "ok": true,
           "httpCode": "200",
-          "timeSec": 0.203,
+          "timeSec": 0.146,
           "message": "OK"
         },
         "sg1.node.check-host.net": {
@@ -113,7 +113,7 @@
           "isIndonesia": false,
           "ok": true,
           "httpCode": "200",
-          "timeSec": 0.112,
+          "timeSec": 0.19,
           "message": "OK"
         }
       }
