@@ -6,15 +6,25 @@
 <title>Status Blokir Website</title>
 <style>
   :root {
-    --bg: #0f1115;
-    --card: #171a21;
-    --border: #262b36;
-    --text: #e6e8eb;
-    --muted: #8b93a1;
-    --accent: #4f8cff;
-    --ok: #35c07f;
-    --warn: #f5b942;
-    --bad: #e5484d;
+    --bg: #0a0c10;
+    --bg-sidebar: #0d1016;
+    --card: #12151c;
+    --card-hover: #151923;
+    --border: #232733;
+    --border-subtle: #1a1e28;
+    --text: #e8eaed;
+    --muted: #97a1b2;
+    --muted-2: #656d7d;
+    --accent: #5b8cff;
+    --accent-soft: rgba(91,140,255,0.12);
+    --ok: #34d399;
+    --ok-soft: rgba(52,211,153,0.13);
+    --warn: #fbbf24;
+    --warn-soft: rgba(251,191,36,0.13);
+    --bad: #f87171;
+    --bad-soft: rgba(248,113,113,0.13);
+    --radius: 14px;
+    --radius-sm: 10px;
   }
   * { box-sizing: border-box; }
   body {
@@ -22,65 +32,140 @@
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     background: var(--bg);
     color: var(--text);
-    display: flex;
-    justify-content: center;
-    padding: 40px 16px;
+    -webkit-font-smoothing: antialiased;
   }
-  .wrap { width: 100%; max-width: 680px; }
-  h1 { font-size: 22px; margin: 0 0 4px; }
-  .sub { color: var(--muted); font-size: 14px; margin-bottom: 24px; }
-  .domain {
-    color: var(--accent);
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  code {
+    background: rgba(255,255,255,0.06);
+    padding: 1px 5px;
+    border-radius: 4px;
+    font-size: 12px;
     font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   }
+  .domain-mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
 
+  /* ---------- Layout ---------- */
+  .app { display: flex; min-height: 100vh; }
+
+  .sidebar {
+    width: 300px;
+    flex-shrink: 0;
+    background: var(--bg-sidebar);
+    border-right: 1px solid var(--border-subtle);
+    padding: 28px 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 26px;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+  }
+  .brand { display: flex; align-items: center; gap: 12px; }
+  .brand-icon {
+    width: 38px; height: 38px; border-radius: 10px;
+    background: linear-gradient(135deg, var(--accent), #8b6bff);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; flex-shrink: 0;
+    box-shadow: 0 4px 14px rgba(91,140,255,0.25);
+  }
+  .brand-name { font-size: 15px; font-weight: 700; letter-spacing: 0.2px; }
+  .brand-sub { font-size: 12px; color: var(--muted-2); margin-top: 1px; }
+
+  .side-section { display: flex; flex-direction: column; gap: 10px; }
+  .side-label {
+    font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px;
+    color: var(--muted-2); padding: 0 2px;
+  }
+
+  .side-footer {
+    margin-top: auto;
+    font-size: 11.5px; color: var(--muted-2); line-height: 1.7;
+    padding-top: 18px; border-top: 1px solid var(--border-subtle);
+  }
+  .side-footer a { color: var(--muted); }
+
+  .main {
+    flex: 1;
+    min-width: 0;
+    padding: 44px 36px 60px;
+  }
+  .main-inner { max-width: 860px; margin: 0 auto; }
+
+  .main-header { margin-bottom: 28px; }
+  h1 { font-size: 25px; margin: 0 0 6px; letter-spacing: -0.2px; }
+  .sub { color: var(--muted); font-size: 14px; line-height: 1.6; max-width: 620px; }
+
+  .stats-row { display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap; }
+  .stat-pill {
+    display: flex; align-items: baseline; gap: 6px;
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 999px; padding: 8px 16px 8px 14px;
+  }
+  .stat-pill .stat-num { font-size: 16px; font-weight: 700; }
+  .stat-pill .stat-label { font-size: 12px; color: var(--muted); }
+  .stat-pill.ok .stat-num { color: var(--ok); }
+  .stat-pill.bad .stat-num { color: var(--bad); }
+
+  /* ---------- Site cards ---------- */
+  .sites-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+    gap: 16px;
+  }
   .site-card {
     background: var(--card);
     border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 20px 24px;
-    margin-bottom: 16px;
+    border-left: 3px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px 22px;
+    transition: border-color 0.15s ease, background 0.15s ease;
   }
+  .site-card:hover { background: var(--card-hover); }
+  .site-card.kind-ok { border-left-color: var(--ok); }
+  .site-card.kind-warn { border-left-color: var(--warn); }
+  .site-card.kind-bad { border-left-color: var(--bad); }
+
   .site-head {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 12px;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
   }
   .site-head .name {
-    font-size: 16px;
+    font-size: 15.5px;
     font-weight: 700;
-    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   }
   .badge {
-    font-size: 12px;
+    font-size: 11.5px;
     font-weight: 700;
-    padding: 4px 10px;
+    padding: 4px 11px;
     border-radius: 999px;
     white-space: nowrap;
   }
-  .badge.ok { background: rgba(53,192,127,0.15); color: var(--ok); }
-  .badge.warn { background: rgba(245,185,66,0.15); color: var(--warn); }
-  .badge.bad { background: rgba(229,72,77,0.15); color: var(--bad); }
-  .site-desc { font-size: 13px; color: var(--muted); margin-bottom: 14px; }
+  .badge.ok { background: var(--ok-soft); color: var(--ok); }
+  .badge.warn { background: var(--warn-soft); color: var(--warn); }
+  .badge.bad { background: var(--bad-soft); color: var(--bad); }
+  .site-desc { font-size: 12.5px; color: var(--muted); margin-bottom: 12px; line-height: 1.5; }
 
   .status-row {
     display: flex;
     align-items: center;
     gap: 12px;
     padding: 10px 0;
-    border-top: 1px solid var(--border);
+    border-top: 1px solid var(--border-subtle);
   }
-  .dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; background: var(--muted); }
-  .dot.ok { background: var(--ok); box-shadow: 0 0 8px var(--ok); }
-  .dot.bad { background: var(--bad); box-shadow: 0 0 8px var(--bad); }
-  .row-text { flex: 1; font-size: 13px; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; background: var(--muted-2); }
+  .dot.ok { background: var(--ok); box-shadow: 0 0 8px rgba(52,211,153,0.6); }
+  .dot.bad { background: var(--bad); box-shadow: 0 0 8px rgba(248,113,113,0.6); }
+  .row-text { flex: 1; font-size: 12.5px; }
   .row-state { font-size: 12px; font-weight: 600; text-align: right; }
   .row-state.ok { color: var(--ok); }
   .row-state.bad { color: var(--bad); }
-  .row-sub { font-size: 11px; color: var(--muted); margin-top: 2px; text-align: right; }
-  .timestamp { font-size: 11px; color: var(--muted); margin-top: 10px; text-align: right; }
+  .row-sub { font-size: 11px; color: var(--muted-2); margin-top: 2px; text-align: right; }
+  .timestamp { font-size: 11px; color: var(--muted-2); margin-top: 12px; text-align: right; }
 
   .empty, .loading {
     color: var(--muted);
@@ -88,127 +173,173 @@
     padding: 20px 0;
   }
 
-  .footer-note { color: var(--muted); font-size: 12px; margin-top: 24px; line-height: 1.6; }
-  a { color: var(--accent); }
-  code {
-    background: rgba(255,255,255,0.06);
-    padding: 1px 5px;
-    border-radius: 4px;
-    font-size: 12px;
-  }
-
+  /* ---------- Admin panel (sidebar) ---------- */
   details.admin {
     background: var(--card);
     border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 4px 24px;
-    margin-top: 24px;
+    border-radius: var(--radius-sm);
+    overflow: hidden;
   }
   details.admin summary {
     cursor: pointer;
-    padding: 14px 0;
-    font-size: 14px;
+    padding: 12px 14px;
+    font-size: 13px;
     font-weight: 600;
     list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text);
   }
   details.admin summary::-webkit-details-marker { display: none; }
-  .admin-body { padding-bottom: 20px; }
-  .field-label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 6px; }
-  .field-row { display: flex; gap: 8px; }
+  details.admin summary::after {
+    content: "";
+    width: 7px; height: 7px;
+    border-right: 1.5px solid var(--muted-2);
+    border-bottom: 1.5px solid var(--muted-2);
+    transform: rotate(-45deg);
+    margin-left: auto;
+    transition: transform 0.15s ease;
+  }
+  details.admin[open] summary::after { transform: rotate(45deg); }
+  .summary-tag {
+    font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px;
+    color: var(--muted-2); background: rgba(255,255,255,0.05);
+    padding: 2px 6px; border-radius: 5px; margin-left: auto;
+  }
+  details.admin[open] summary::after { margin-left: 0; }
+  .admin-body { padding: 4px 14px 16px; border-top: 1px solid var(--border-subtle); }
+  .field-label { display: block; font-size: 11.5px; color: var(--muted); margin: 14px 0 6px; }
+  .field-row { display: flex; flex-direction: column; gap: 8px; }
   .field-row input {
-    flex: 1;
-    background: #0c0e13;
+    width: 100%;
+    background: #090b0f;
     border: 1px solid var(--border);
     color: var(--text);
-    padding: 9px 12px;
+    padding: 9px 11px;
     border-radius: 8px;
-    font-size: 13px;
+    font-size: 12.5px;
     font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   }
   .field-row input:focus { outline: 1px solid var(--accent); }
-  .field-hint { font-size: 11px; color: var(--muted); margin-top: 6px; line-height: 1.5; }
+  .field-hint { font-size: 11px; color: var(--muted-2); margin-top: 8px; line-height: 1.55; }
   button.primary-btn, button.secondary-btn {
     border: none;
-    padding: 9px 16px;
+    padding: 9px 14px;
     border-radius: 8px;
-    font-size: 13px;
+    font-size: 12.5px;
     font-weight: 600;
     cursor: pointer;
     white-space: nowrap;
   }
-  button.primary-btn { background: var(--accent); color: #fff; }
+  button.primary-btn { background: var(--accent); color: #fff; width: 100%; }
   button.primary-btn:hover { opacity: 0.9; }
   button.primary-btn:disabled { opacity: 0.5; cursor: default; }
   button.secondary-btn { background: transparent; border: 1px solid var(--border); color: var(--text); }
   .link-btn {
     background: none; border: none; color: var(--muted);
-    font-size: 12px; text-decoration: underline; cursor: pointer; padding: 0;
+    font-size: 11.5px; text-decoration: underline; cursor: pointer; padding: 0;
   }
-  .token-ok { color: var(--ok); font-size: 13px; font-weight: 600; }
-  .admin-msg { font-size: 12px; margin-top: 10px; min-height: 16px; }
+  .token-ok { color: var(--ok); font-size: 12.5px; font-weight: 600; }
+  .admin-msg { font-size: 11.5px; margin-top: 10px; min-height: 15px; line-height: 1.5; }
   .admin-msg.error { color: var(--bad); }
   .admin-msg.success { color: var(--ok); }
   .admin-msg.info { color: var(--muted); }
-  .domain-list { margin-top: 16px; }
+  .domain-list { margin-top: 14px; }
   .domain-row {
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 8px 0;
-    border-top: 1px solid var(--border);
-    font-size: 13px;
+    border-top: 1px solid var(--border-subtle);
+    font-size: 12.5px;
   }
-  .domain-row .dname { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+  .domain-row .dname { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; word-break: break-all; }
+
+  /* ---------- Responsive ---------- */
+  @media (max-width: 880px) {
+    .app { flex-direction: column; }
+    .sidebar {
+      width: 100%; height: auto; position: static;
+      border-right: none; border-bottom: 1px solid var(--border-subtle);
+    }
+    .main { padding: 32px 20px 48px; }
+  }
 </style>
 </head>
 <body>
-<div class="wrap">
-  <h1>Status Akses Website</h1>
-  <div class="sub">Dicek otomatis dari jaringan <strong>Indonesia (Jakarta)</strong>, notifikasi dikirim ke Telegram saat ada perubahan status.</div>
-
-  <div id="sites-container">
-    <div class="loading">Memuat data...</div>
-  </div>
-
-  <details class="admin" id="admin-panel">
-    <summary>⚙️ Kelola domain (khusus admin)</summary>
-    <div class="admin-body">
-      <div id="token-section">
-        <label class="field-label">GitHub Personal Access Token (tersimpan hanya di browser ini)</label>
-        <div class="field-row">
-          <input type="password" id="pat-input" placeholder="github_pat_xxx" autocomplete="off" />
-          <button class="primary-btn" id="pat-save-btn">Simpan</button>
-        </div>
-        <div class="field-hint">
-          Buat fine-grained token khusus untuk repo <code>GabFx09/file-autocheckweb</code> dengan izin
-          <b>Contents: Read and write</b> di
-          <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">github.com/settings/personal-access-tokens/new</a>.
-          Token tidak pernah dikirim ke server lain, hanya dipakai browser Anda untuk memanggil GitHub API langsung.
-        </div>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-icon">🛰️</div>
+      <div>
+        <div class="brand-name">Status Blokir</div>
+        <div class="brand-sub">Monitor akses Indonesia</div>
       </div>
-      <div id="token-active" style="display:none;">
-        <span class="token-ok">✓ Token tersimpan di browser ini</span>
-        &nbsp;·&nbsp;
-        <button class="link-btn" id="pat-clear-btn">Lupakan token</button>
-      </div>
-
-      <div class="field-row" style="margin-top:18px;">
-        <input type="text" id="new-domain-input" placeholder="contoh: situsku.com" autocomplete="off" />
-        <button class="primary-btn" id="add-domain-btn">Tambah</button>
-      </div>
-      <div class="admin-msg" id="admin-msg"></div>
-
-      <div class="domain-list" id="domain-list"></div>
     </div>
-  </details>
 
-  <div class="footer-note">
-    Pengecekan dijalankan GitHub Actions tiap ±15 menit: lewat proxy ISP residensial Indonesia (Webshare) sebagai
-    sinyal utama bila terkonfigurasi, ditambah jaringan probe pihak ketiga
-    <a href="https://check-host.net" target="_blank" rel="noopener">check-host.net</a> (dua titik datacenter di
-    Jakarta dibandingkan satu titik di Singapura) sebagai pembanding. Titik datacenter cenderung tidak melihat
-    blokir DNS/IP yang cuma diterapkan di ISP konsumen. Bersifat indikatif, bukan data resmi Kominfo/Komdigi.
-  </div>
+    <div class="side-section">
+      <div class="side-label">Kelola</div>
+      <details class="admin" id="admin-panel">
+        <summary>⚙️ Kelola Domain <span class="summary-tag">Admin</span></summary>
+        <div class="admin-body">
+          <div id="token-section">
+            <label class="field-label">GitHub Personal Access Token</label>
+            <div class="field-row">
+              <input type="password" id="pat-input" placeholder="github_pat_xxx" autocomplete="off" />
+              <button class="primary-btn" id="pat-save-btn">Simpan</button>
+            </div>
+            <div class="field-hint">
+              Buat fine-grained token khusus untuk repo <code>GabFx09/file-autocheckweb</code> dengan izin
+              <b>Contents: Read and write</b> di
+              <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">github.com/settings/personal-access-tokens/new</a>.
+              Token tersimpan hanya di browser ini, tidak pernah dikirim ke server lain selain GitHub API.
+            </div>
+          </div>
+          <div id="token-active" style="display:none;">
+            <span class="token-ok">✓ Token tersimpan di browser ini</span>
+            <div style="margin-top:8px;">
+              <button class="link-btn" id="pat-clear-btn">Lupakan token</button>
+            </div>
+          </div>
+
+          <label class="field-label">Tambah domain</label>
+          <div class="field-row">
+            <input type="text" id="new-domain-input" placeholder="contoh: situsku.com" autocomplete="off" />
+            <button class="primary-btn" id="add-domain-btn">Tambah</button>
+          </div>
+          <div class="admin-msg" id="admin-msg"></div>
+
+          <div class="domain-list" id="domain-list"></div>
+        </div>
+      </details>
+    </div>
+
+    <div class="side-footer">
+      Pengecekan dijalankan GitHub Actions tiap ±15 menit: lewat proxy ISP residensial Indonesia (Webshare) sebagai
+      sinyal utama bila terkonfigurasi, ditambah jaringan probe pihak ketiga
+      <a href="https://check-host.net" target="_blank" rel="noopener">check-host.net</a> sebagai pembanding.
+      Bersifat indikatif, bukan data resmi Kominfo/Komdigi.
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="main-inner">
+      <div class="main-header">
+        <h1>Status Akses Website</h1>
+        <div class="sub">Dicek otomatis dari jaringan <strong>Indonesia</strong>, notifikasi dikirim ke Telegram saat ada perubahan status.</div>
+        <div class="stats-row" id="stats-row" style="display:none;">
+          <div class="stat-pill"><span class="stat-num" id="stat-total">0</span><span class="stat-label">Domain</span></div>
+          <div class="stat-pill ok"><span class="stat-num" id="stat-ok">0</span><span class="stat-label">Aktif</span></div>
+          <div class="stat-pill bad"><span class="stat-num" id="stat-issue">0</span><span class="stat-label">Bermasalah</span></div>
+        </div>
+      </div>
+
+      <div id="sites-container" class="sites-grid">
+        <div class="loading">Memuat data...</div>
+      </div>
+    </div>
+  </main>
 </div>
 
 <script>
@@ -235,7 +366,7 @@ function renderSite(site) {
     const dotClass = n.ok ? "ok" : "bad";
     const stateText = n.ok ? "Bisa diakses" : "Tidak bisa diakses";
     const sub = n.ok
-      ? `HTTP ${n.httpCode ?? "?"} · ${n.timeSec != null ? (n.timeSec * 1000).toFixed(0) + " ms" : ""}`
+      ? (n.httpCode ? `HTTP ${n.httpCode}` : "Terhubung") + (n.timeSec != null ? ` · ${(n.timeSec * 1000).toFixed(0)} ms` : "")
       : (n.message || "Gagal terhubung");
     return `
       <div class="status-row">
@@ -253,9 +384,9 @@ function renderSite(site) {
     : "-";
 
   return `
-    <div class="site-card">
+    <div class="site-card kind-${meta.kind}">
       <div class="site-head">
-        <div class="name">${escapeHtml(site.domain)}</div>
+        <div class="name domain-mono">${escapeHtml(site.domain)}</div>
         <div class="badge ${meta.kind}">${meta.icon} ${meta.label}</div>
       </div>
       <div class="site-desc">${meta.desc}</div>
@@ -282,6 +413,12 @@ async function load() {
   }
 
   container.innerHTML = sites.map(renderSite).join("");
+
+  const okCount = sites.filter((s) => (VERDICT_META[s.verdict] || {}).kind === "ok").length;
+  document.getElementById("stat-total").textContent = sites.length;
+  document.getElementById("stat-ok").textContent = okCount;
+  document.getElementById("stat-issue").textContent = sites.length - okCount;
+  document.getElementById("stats-row").style.display = "flex";
 }
 
 load();
