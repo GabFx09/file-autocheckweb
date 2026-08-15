@@ -7,6 +7,7 @@
 import fs from "node:fs/promises";
 import net from "node:net";
 import tls from "node:tls";
+import http2 from "node:http2";
 
 const ID_NODES = ["id1.node.check-host.net", "id2.node.check-host.net"];
 const REF_NODE = "sg1.node.check-host.net";
@@ -186,19 +187,21 @@ function connectThroughProxy(auth, targetHost, targetPort) {
 
 // Raw CONNECT + TLS handshake instead of undici's fetch: offering ALPN h2
 // (like a real browser negotiating with Cloudflare) is required to reproduce
-// the actual block. Confirmed 2026-08-15: some Indonesian carrier networks
-// (seen on Telkomsel exits) run a TLS-intercepting middlebox that only
-// triggers on browser-like (h2-offering) connections and substitutes its own
-// "Internet Positif" filter certificate (altnames seen: internetbaik.telkomsel.com,
-// internettepat.telkomsel.com) instead of completing the real handshake with
-// Cloudflare. An http/1.1-only client (curl.exe, or undici's fetch without
-// allowH2) sails through untouched and misses the block entirely — which is
-// why this checker previously read "accessible" while real users were blocked.
-// A successful, certificate-validated handshake is sufficient signal by
-// itself; we don't need to parse the HTTP/2 response to know the connection
-// wasn't intercepted.
+// the actual block. Confirmed 2026-08-15: Indonesian ISPs intercept via
+// several distinct mechanisms — DNS redirect to the ISP's own "Internet
+// Positif" landing page (seen on Telkomsel: cert altnames
+// internetbaik.telkomsel.com / internettepat.telkomsel.com — TLS completes,
+// but against the wrong server), inline SSL deep-inspection (seen on AS23679:
+// a FortiGate box re-signs the *correct* domain with its own untrusted CA),
+// and (per Komdigi's own documented approach for large shared-hosting domains
+// like YouTube) keyword/URL-path filtering that resets the connection mid-
+// request rather than at the handshake. The first two show up as a TLS
+// handshake failure; the third would NOT — the handshake completes cleanly
+// and only the subsequent HTTP request gets cut. So a successful handshake
+// alone is not sufficient signal; we have to actually complete a real
+// request and read the response to catch that third case too.
 async function residentialFetchOnce(auth, targetUrl) {
-  const { hostname } = new URL(targetUrl);
+  const { hostname, pathname } = new URL(targetUrl);
   const start = Date.now();
   let rawSocket;
   try {
@@ -207,28 +210,102 @@ async function residentialFetchOnce(auth, targetUrl) {
     err.stage = "proxy-connect";
     throw err;
   }
-  return new Promise((resolve, reject) => {
-    const tlsSocket = tls.connect({
+
+  const tlsSocket = await new Promise((resolve, reject) => {
+    const socket = tls.connect({
       socket: rawSocket,
       servername: hostname,
       ALPNProtocols: ["h2", "http/1.1"],
       timeout: 20000,
     });
-    tlsSocket.on("secureConnect", () => {
-      tlsSocket.destroy();
-      resolve({ ok: true, httpCode: null, timeSec: (Date.now() - start) / 1000, message: "OK" });
-    });
-    tlsSocket.on("error", (err) => {
-      tlsSocket.destroy();
+    socket.on("secureConnect", () => resolve(socket));
+    socket.on("error", (err) => {
       err.stage = "tls-handshake";
       reject(err);
     });
-    tlsSocket.on("timeout", () => {
-      tlsSocket.destroy();
+    socket.on("timeout", () => {
+      socket.destroy();
       const err = new Error("TLS handshake timed out");
       err.stage = "tls-handshake";
       reject(err);
     });
+  });
+
+  try {
+    const httpCode =
+      tlsSocket.alpnProtocol === "h2"
+        ? await requestOverH2(tlsSocket, targetUrl)
+        : await requestOverH1(tlsSocket, hostname, pathname || "/");
+    return { ok: true, httpCode, timeSec: (Date.now() - start) / 1000, message: "OK" };
+  } catch (err) {
+    err.stage = err.stage || "http-request";
+    throw err;
+  } finally {
+    tlsSocket.destroy();
+  }
+}
+
+function requestOverH1(tlsSocket, hostname, path) {
+  return new Promise((resolve, reject) => {
+    let buf = "";
+    let settled = false;
+    const timer = setTimeout(() => {
+      if (settled) return;
+      settled = true;
+      reject(new Error("HTTP/1.1 request timed out"));
+    }, 15000);
+
+    tlsSocket.on("data", (chunk) => {
+      buf += chunk.toString("latin1");
+      const statusMatch = buf.match(/^HTTP\/1\.[01] (\d{3})/);
+      // A full response isn't needed — the status line alone proves the
+      // server actually answered our request rather than the connection
+      // being reset mid-stream.
+      if (statusMatch && !settled) {
+        settled = true;
+        clearTimeout(timer);
+        resolve(statusMatch[1]);
+      }
+    });
+    tlsSocket.on("error", (err) => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timer);
+      reject(err);
+    });
+    tlsSocket.on("close", () => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timer);
+      reject(new Error("Connection closed before HTTP response"));
+    });
+    tlsSocket.write(`GET ${path} HTTP/1.1\r\nHost: ${hostname}\r\nConnection: close\r\n\r\n`);
+  });
+}
+
+function requestOverH2(tlsSocket, targetUrl) {
+  return new Promise((resolve, reject) => {
+    let settled = false;
+    const settle = (fn, arg) => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timer);
+      try { session.close(); } catch {}
+      fn(arg);
+    };
+    const timer = setTimeout(() => settle(reject, new Error("HTTP/2 request timed out")), 15000);
+
+    const session = http2.connect(targetUrl, { createConnection: () => tlsSocket });
+    session.on("error", (err) => settle(reject, err));
+
+    const req = session.request({ ":path": new URL(targetUrl).pathname || "/" });
+    req.on("response", (headers) => {
+      const status = headers[":status"];
+      req.on("data", () => {}); // drain so 'end' fires
+      req.on("end", () => settle(resolve, String(status)));
+    });
+    req.on("error", (err) => settle(reject, err));
+    req.end();
   });
 }
 
