@@ -18,8 +18,21 @@ const RESIDENTIAL_NODE = "id-residential-proxy";
 // accessible. Diagnostic on 2026-08-15 found ~91% baseline success rate through
 // AS23679 itself (55 samples, 5 fails, same exit IP flipping ok/fail between
 // requests seconds apart) — the block is intermittent/probabilistic, not a
-// static per-IP block, so this needs majority-of-samples too, not single-shot.
-const KNOWN_PROBLEM_ASNS = [{ asn: "23679", label: "AS23679 PT Media Antar Nusa (Medan)" }];
+// static per-IP block.
+//
+// AS23693 (Telkomsel) added 2026-08-15 after directly capturing the block
+// mechanism: a TLS-intercepting middlebox on that carrier substitutes its own
+// "Internet Positif" filter certificate (altnames internetbaik.telkomsel.com /
+// internettepat.telkomsel.com) instead of completing the real handshake with
+// Cloudflare. Confirmed at a ~15-25% rate across 28 direct samples (both
+// HTTP/1.1-only and h2-offering connections got intercepted), reproducing
+// what a real user reported as a consistent ERR_TIMED_OUT in-browser even
+// though check-host.net, curl.exe, and the country-wide residential check all
+// read "accessible" for the same domain at the same time.
+const KNOWN_PROBLEM_ASNS = [
+  { asn: "23679", label: "AS23679 PT Media Antar Nusa (Medan)" },
+  { asn: "23693", label: "AS23693 PT. Telekomunikasi Selular (Telkomsel)" },
+];
 
 function asnNodeKey(asn) {
   return `id-residential-proxy-asn-${asn}`;
@@ -222,7 +235,7 @@ function buildProxyAuth(username, password, targeting) {
   return { username: `${username}-${targeting}-rotate`, password };
 }
 
-async function sampleProxyMajority(auth, targetUrl, label) {
+async function sampleProxyMajority(auth, targetUrl, label, { anyFailureBlocks = false } = {}) {
   const samples = [];
   for (let i = 0; i < PROXY_SAMPLES; i++) {
     samples.push(await residentialSampleOnce(auth, targetUrl));
@@ -230,13 +243,19 @@ async function sampleProxyMajority(auth, targetUrl, label) {
 
   const okCount = samples.filter((s) => s.ok).length;
   const failCount = PROXY_SAMPLES - okCount;
-  const blocked = failCount > PROXY_SAMPLES / 2;
+  // Country-wide sampling needs a majority to fail — a single dead/flaky exit
+  // shouldn't flip a nationally-accessible site to "blocked". Known-problem
+  // ASN checks flip on any single failure instead: a captured TLS interception
+  // (certificate swapped for an ISP's own filter page) is a positive, unambiguous
+  // signal of blocking, not noise — requiring a majority would mask genuinely
+  // intermittent ISP-level blocks confirmed to occur at only a ~15-25% rate.
+  const blocked = anyFailureBlocks ? failCount > 0 : failCount > PROXY_SAMPLES / 2;
   const representative = samples.find((s) => s.ok) || samples[samples.length - 1];
 
   return {
     ...representative,
     ok: !blocked,
-    message: `${okCount}/${PROXY_SAMPLES} ${label} berhasil akses${blocked ? " (mayoritas gagal)" : ""}`,
+    message: `${okCount}/${PROXY_SAMPLES} ${label} berhasil akses${blocked ? " (ada yang gagal/diblokir)" : ""}`,
   };
 }
 
@@ -257,7 +276,7 @@ async function checkViaAsnProxy(domain, asn) {
 
   const auth = buildProxyAuth(username, password, `asn_${asn}`);
   const targetUrl = `https://${domain}/`;
-  return sampleProxyMajority(auth, targetUrl, `AS${asn}`);
+  return sampleProxyMajority(auth, targetUrl, `AS${asn}`, { anyFailureBlocks: true });
 }
 
 async function checkDomain(domain) {
