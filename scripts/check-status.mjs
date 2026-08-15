@@ -5,16 +5,26 @@
 // (or recovers).
 
 import fs from "node:fs/promises";
+import { ProxyAgent, fetch as undiciFetch } from "undici";
 
 const ID_NODES = ["id1.node.check-host.net", "id2.node.check-host.net"];
 const REF_NODE = "sg1.node.check-host.net";
 const ALL_NODES = [...ID_NODES, REF_NODE];
+const RESIDENTIAL_NODE = "id-residential-proxy";
 
 const NODE_LABELS = {
-  "id1.node.check-host.net": "Jakarta, Indonesia (node 1)",
-  "id2.node.check-host.net": "Jakarta, Indonesia (node 2)",
+  "id1.node.check-host.net": "Jakarta, Indonesia (node 1, datacenter)",
+  "id2.node.check-host.net": "Jakarta, Indonesia (node 2, datacenter)",
   "sg1.node.check-host.net": "Singapore (pembanding)",
+  [RESIDENTIAL_NODE]: "ISP Residensial Indonesia (Webshare)",
 };
+
+// Datacenter probe nodes (check-host.net) sit on transit that Kominfo/Komdigi's
+// Trust Positif blocking usually doesn't reach, so they miss ISP-level DNS/IP
+// blocks. This residential proxy exits through a real Indonesian consumer ISP
+// and is the most representative signal when it's configured.
+const PROXY_HOST = "p.webshare.io";
+const PROXY_PORT = 80;
 
 const API_HEADERS = { Accept: "application/json" };
 const BAD_VERDICTS = new Set(["blocked_in_indonesia", "site_down", "partial"]);
@@ -70,10 +80,56 @@ function parseNodeResult(entry) {
 function computeVerdict(nodes) {
   const idOkCount = ID_NODES.filter((n) => nodes[n].ok).length;
   const refOk = nodes[REF_NODE].ok;
+  const residential = nodes[RESIDENTIAL_NODE];
+
+  // The residential proxy exits through a real Indonesian ISP, so it's the
+  // most trustworthy signal for ISP-level blocking when it's available.
+  if (residential) {
+    if (residential.ok) return "accessible";
+    if (refOk) return "blocked_in_indonesia";
+    if (idOkCount === 0) return "site_down";
+    return "partial";
+  }
+
   if (idOkCount === ID_NODES.length) return "accessible";
   if (idOkCount === 0 && refOk) return "blocked_in_indonesia";
   if (idOkCount === 0 && !refOk) return "site_down";
   return "partial";
+}
+
+async function checkViaResidentialProxy(domain) {
+  const username = process.env.WEBSHARE_USERNAME;
+  const password = process.env.WEBSHARE_PASSWORD;
+  if (!username || !password) return null;
+
+  const proxyUrl = `http://${username}-id-rotate:${password}@${PROXY_HOST}:${PROXY_PORT}`;
+  const dispatcher = new ProxyAgent(proxyUrl);
+  const targetUrl = `https://${domain}/`;
+
+  const attempt = async () => {
+    const start = Date.now();
+    const res = await undiciFetch(targetUrl, {
+      dispatcher,
+      signal: AbortSignal.timeout(20000),
+    });
+    return { ok: res.ok || res.status < 500, httpCode: String(res.status), timeSec: (Date.now() - start) / 1000, message: "OK" };
+  };
+
+  try {
+    // Retry once: the free/shared residential pool occasionally has a dead
+    // exit IP, which would otherwise read as a false "blocked" verdict.
+    for (let i = 0; i < 2; i++) {
+      try {
+        return await attempt();
+      } catch (err) {
+        if (i === 1) {
+          return { ok: false, httpCode: null, timeSec: null, message: err.message || "Gagal terhubung lewat proxy" };
+        }
+      }
+    }
+  } finally {
+    await dispatcher.close();
+  }
 }
 
 async function checkDomain(domain) {
@@ -81,6 +137,12 @@ async function checkDomain(domain) {
   const raw = await pollResult(requestId);
 
   const nodes = {};
+
+  const residential = await checkViaResidentialProxy(domain);
+  if (residential) {
+    nodes[RESIDENTIAL_NODE] = { label: NODE_LABELS[RESIDENTIAL_NODE], isIndonesia: true, ...residential };
+  }
+
   for (const node of ALL_NODES) {
     const entries = raw[node];
     const first = Array.isArray(entries) ? entries[0] : null;

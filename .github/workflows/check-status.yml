@@ -10,6 +10,8 @@ on:
       - "scripts/check-status.mjs"
       - ".github/workflows/check-status.yml"
       - "domains.json"
+      - "package.json"
+      - "package-lock.json"
 
 permissions:
   contents: write
@@ -27,11 +29,17 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
 
       - name: Run status check (from Indonesia + reference node)
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          WEBSHARE_USERNAME: ${{ secrets.WEBSHARE_USERNAME }}
+          WEBSHARE_PASSWORD: ${{ secrets.WEBSHARE_PASSWORD }}
         run: node scripts/check-status.mjs
 
       - name: Commit status.json if changed
