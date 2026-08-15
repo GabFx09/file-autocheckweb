@@ -384,10 +384,13 @@ async function main() {
     const nowBad = BAD_VERDICTS.has(result.verdict);
     const wasBad = prevVerdict ? BAD_VERDICTS.has(prevVerdict) : false;
 
+    // Only alert when a domain newly becomes blocked — not on recovery. Some
+    // of these ISP-level blocks are intermittent/probabilistic by nature (a
+    // sample can pass or fail depending on which random exit IP got picked),
+    // so a "sudah pulih" alert would often just be noise from the verdict
+    // flapping back and forth rather than a genuine recovery.
     if (nowBad && !wasBad) {
       alerts.push(`⚠️ <b>${domain}</b>\n${VERDICT_TEXT[result.verdict]}`);
-    } else if (!nowBad && wasBad) {
-      alerts.push(`✅ <b>${domain}</b>\nsudah pulih, ${VERDICT_TEXT[result.verdict]}`);
     }
 
     // be gentle with the public API between domains
