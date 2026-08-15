@@ -191,7 +191,13 @@ function connectThroughProxy(auth, targetHost, targetPort) {
 async function residentialFetchOnce(auth, targetUrl) {
   const { hostname } = new URL(targetUrl);
   const start = Date.now();
-  const rawSocket = await connectThroughProxy(auth, hostname, 443);
+  let rawSocket;
+  try {
+    rawSocket = await connectThroughProxy(auth, hostname, 443);
+  } catch (err) {
+    err.stage = "proxy-connect";
+    throw err;
+  }
   return new Promise((resolve, reject) => {
     const tlsSocket = tls.connect({
       socket: rawSocket,
@@ -205,23 +211,30 @@ async function residentialFetchOnce(auth, targetUrl) {
     });
     tlsSocket.on("error", (err) => {
       tlsSocket.destroy();
+      err.stage = "tls-handshake";
       reject(err);
     });
     tlsSocket.on("timeout", () => {
       tlsSocket.destroy();
-      reject(new Error("TLS handshake timed out"));
+      const err = new Error("TLS handshake timed out");
+      err.stage = "tls-handshake";
+      reject(err);
     });
   });
 }
 
 async function residentialSampleOnce(auth, targetUrl) {
-  // Retry once per sample: the shared residential pool occasionally hands out a
-  // dead exit IP, which would otherwise read as a false "blocked" sample.
+  // Only retry a failure at the proxy-CONNECT stage (the shared pool
+  // occasionally hands out a dead exit IP, which would otherwise read as a
+  // false "blocked" sample). A failure during/after the TLS handshake itself
+  // (cert mismatch, mid-handshake disconnect, garbage bytes) IS the block
+  // signal we're trying to detect — retrying would just draw a new random
+  // exit IP and silently paper over a real, already-observed interception.
   for (let i = 0; i < 2; i++) {
     try {
       return await residentialFetchOnce(auth, targetUrl);
     } catch (err) {
-      if (i === 1) {
+      if (i === 1 || err.stage !== "proxy-connect") {
         return { ok: false, httpCode: null, timeSec: null, message: err.message || "Gagal terhubung lewat proxy" };
       }
     }
