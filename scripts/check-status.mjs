@@ -355,8 +355,18 @@ async function checkViaAsnProxy(domain, asn) {
 }
 
 async function checkDomain(domain) {
-  const requestId = await requestCheck(domain);
-  const raw = await pollResult(requestId);
+  // check-host.net is only a secondary/comparison signal — the residential
+  // proxy checks below are authoritative. Don't let a check-host.net outage
+  // or rate limit (HTTP 429, seen 2026-08-15 after a day of heavy manual
+  // diagnostic runs) abort the whole domain check and wipe out otherwise-good
+  // proxy data; degrade gracefully to "no response" for its 3 nodes instead.
+  let raw = {};
+  try {
+    const requestId = await requestCheck(domain);
+    raw = await pollResult(requestId);
+  } catch (err) {
+    console.error(`check-host.net gagal untuk ${domain}: ${err.message}`);
+  }
 
   const nodes = {};
 
