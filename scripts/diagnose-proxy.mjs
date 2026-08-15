@@ -10,6 +10,7 @@ const PROXY_HOST = "p.webshare.io";
 const PROXY_PORT = 80;
 const SAMPLES = Number(process.env.DIAG_SAMPLES || 12);
 const TARGET = process.env.DIAG_TARGET || "https://totomantap.top/";
+const ASN = process.env.DIAG_ASN || "";
 
 async function throughProxy(proxyUrl, url) {
   const dispatcher = new ProxyAgent(proxyUrl);
@@ -30,9 +31,10 @@ async function main() {
   const password = process.env.WEBSHARE_PASSWORD;
   if (!username || !password) throw new Error("WEBSHARE_USERNAME/PASSWORD not set");
 
-  const proxyUrl = `http://${username}-ID-rotate:${password}@${PROXY_HOST}:${PROXY_PORT}`;
+  const targeting = ASN ? `asn_${ASN}` : "ID";
+  const proxyUrl = `http://${username}-${targeting}-rotate:${password}@${PROXY_HOST}:${PROXY_PORT}`;
 
-  console.log(`Sampling ${SAMPLES} exit IPs against ${TARGET}\n`);
+  console.log(`Sampling ${SAMPLES} exit IPs (targeting=${targeting}) against ${TARGET}\n`);
 
   for (let i = 0; i < SAMPLES; i++) {
     const [info, target] = await Promise.all([

@@ -9,6 +9,9 @@ on:
       target:
         description: "URL to test through each exit IP"
         default: "https://totomantap.top/"
+      asn:
+        description: "ASN number to target instead of country-wide ID (e.g. 23679). Leave blank for country-wide."
+        default: ""
 
 jobs:
   diagnose:
@@ -30,4 +33,5 @@ jobs:
           WEBSHARE_PASSWORD: ${{ secrets.WEBSHARE_PASSWORD }}
           DIAG_SAMPLES: ${{ github.event.inputs.samples }}
           DIAG_TARGET: ${{ github.event.inputs.target }}
+          DIAG_ASN: ${{ github.event.inputs.asn }}
         run: node scripts/diagnose-proxy.mjs
