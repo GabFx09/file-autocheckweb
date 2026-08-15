@@ -217,6 +217,8 @@ const VERDICT_META = {
     desc: "Kedua titik di Jakarta berhasil menjangkau situs ini. Tidak terindikasi diblokir." },
   blocked_in_indonesia: { kind: "bad", label: "Diblokir", icon: "🚫", title: "Terindikasi diblokir di Indonesia",
     desc: "Titik di Jakarta gagal mengakses, sementara titik pembanding di luar Indonesia berhasil." },
+  blocked_on_isp: { kind: "warn", label: "Diblokir sebagian ISP", icon: "🚧", title: "Bisa diakses secara nasional, tapi terblokir di ISP tertentu",
+    desc: "Sampling nasional berhasil, tapi ISP tertentu yang sebelumnya kebukti bermasalah (mis. AS23679) mayoritas gagal mengakses." },
   site_down: { kind: "bad", label: "Down", icon: "❌", title: "Tidak dapat diakses",
     desc: "Semua titik (Jakarta & pembanding) gagal. Kemungkinan situs sedang down, bukan diblokir." },
   partial: { kind: "warn", label: "Sebagian", icon: "⚠️", title: "Hasil tidak konsisten",

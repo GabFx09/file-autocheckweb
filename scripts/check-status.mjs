@@ -12,11 +12,26 @@ const REF_NODE = "sg1.node.check-host.net";
 const ALL_NODES = [...ID_NODES, REF_NODE];
 const RESIDENTIAL_NODE = "id-residential-proxy";
 
+// ISPs previously confirmed (via real VPN test + ASN-targeted proxy diagnostics)
+// to sometimes block totomantap.top even when country-wide sampling reads
+// accessible. Diagnostic on 2026-08-15 found ~91% baseline success rate through
+// AS23679 itself (55 samples, 5 fails, same exit IP flipping ok/fail between
+// requests seconds apart) — the block is intermittent/probabilistic, not a
+// static per-IP block, so this needs majority-of-samples too, not single-shot.
+const KNOWN_PROBLEM_ASNS = [{ asn: "23679", label: "AS23679 PT Media Antar Nusa (Medan)" }];
+
+function asnNodeKey(asn) {
+  return `id-residential-proxy-asn-${asn}`;
+}
+
 const NODE_LABELS = {
   "id1.node.check-host.net": "Jakarta, Indonesia (node 1, datacenter)",
   "id2.node.check-host.net": "Jakarta, Indonesia (node 2, datacenter)",
   "sg1.node.check-host.net": "Singapore (pembanding)",
-  [RESIDENTIAL_NODE]: "ISP Residensial Indonesia (Webshare)",
+  [RESIDENTIAL_NODE]: "ISP Residensial Indonesia (Webshare, nasional)",
+  ...Object.fromEntries(
+    KNOWN_PROBLEM_ASNS.map(({ asn, label }) => [asnNodeKey(asn), `ISP Residensial Indonesia (${label})`])
+  ),
 };
 
 // Datacenter probe nodes (check-host.net) sit on transit that Kominfo/Komdigi's
@@ -27,7 +42,7 @@ const PROXY_HOST = "p.webshare.io";
 const PROXY_PORT = 80;
 
 const API_HEADERS = { Accept: "application/json" };
-const BAD_VERDICTS = new Set(["blocked_in_indonesia", "site_down", "partial"]);
+const BAD_VERDICTS = new Set(["blocked_in_indonesia", "site_down", "partial", "blocked_on_isp"]);
 
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -82,16 +97,24 @@ function computeVerdict(nodes) {
   const refOk = nodes[REF_NODE].ok;
   const residential = nodes[RESIDENTIAL_NODE];
 
+  // Country-wide sampling can read "accessible" while a specific ISP still
+  // blocks the site (Trust Positif enforcement isn't uniform across ISPs).
+  // Surface that distinctly rather than silently calling it fully accessible.
+  const blockedAsn = KNOWN_PROBLEM_ASNS.find((entry) => {
+    const node = nodes[asnNodeKey(entry.asn)];
+    return node && !node.ok;
+  });
+
   // The residential proxy exits through a real Indonesian ISP, so it's the
   // most trustworthy signal for ISP-level blocking when it's available.
   if (residential) {
-    if (residential.ok) return "accessible";
+    if (residential.ok) return blockedAsn ? "blocked_on_isp" : "accessible";
     if (refOk) return "blocked_in_indonesia";
     if (idOkCount === 0) return "site_down";
     return "partial";
   }
 
-  if (idOkCount === ID_NODES.length) return "accessible";
+  if (idOkCount === ID_NODES.length) return blockedAsn ? "blocked_on_isp" : "accessible";
   if (idOkCount === 0 && refOk) return "blocked_in_indonesia";
   if (idOkCount === 0 && !refOk) return "site_down";
   return "partial";
@@ -134,16 +157,14 @@ async function residentialSampleOnce(proxyUrl, targetUrl) {
   }
 }
 
-async function checkViaResidentialProxy(domain) {
-  const username = process.env.WEBSHARE_USERNAME;
-  const password = process.env.WEBSHARE_PASSWORD;
-  if (!username || !password) return null;
+function buildProxyUrl(username, password, targeting) {
+  // Webshare's targeting segment must be uppercase for a country code (e.g.
+  // "-ID-rotate"); lowercase silently routes to an arbitrary country instead
+  // of erroring. ASN targeting uses a different segment: "asn_<number>".
+  return `http://${username}-${targeting}-rotate:${password}@${PROXY_HOST}:${PROXY_PORT}`;
+}
 
-  // Webshare's country code in the username must be uppercase (e.g. "-ID-rotate");
-  // lowercase silently routes to an arbitrary country instead of erroring.
-  const proxyUrl = `http://${username}-ID-rotate:${password}@${PROXY_HOST}:${PROXY_PORT}`;
-  const targetUrl = `https://${domain}/`;
-
+async function sampleProxyMajority(proxyUrl, targetUrl, label) {
   const samples = [];
   for (let i = 0; i < PROXY_SAMPLES; i++) {
     samples.push(await residentialSampleOnce(proxyUrl, targetUrl));
@@ -157,8 +178,28 @@ async function checkViaResidentialProxy(domain) {
   return {
     ...representative,
     ok: !blocked,
-    message: `${okCount}/${PROXY_SAMPLES} ISP residensial berhasil akses${blocked ? " (mayoritas gagal)" : ""}`,
+    message: `${okCount}/${PROXY_SAMPLES} ${label} berhasil akses${blocked ? " (mayoritas gagal)" : ""}`,
   };
+}
+
+async function checkViaResidentialProxy(domain) {
+  const username = process.env.WEBSHARE_USERNAME;
+  const password = process.env.WEBSHARE_PASSWORD;
+  if (!username || !password) return null;
+
+  const proxyUrl = buildProxyUrl(username, password, "ID");
+  const targetUrl = `https://${domain}/`;
+  return sampleProxyMajority(proxyUrl, targetUrl, "ISP residensial");
+}
+
+async function checkViaAsnProxy(domain, asn) {
+  const username = process.env.WEBSHARE_USERNAME;
+  const password = process.env.WEBSHARE_PASSWORD;
+  if (!username || !password) return null;
+
+  const proxyUrl = buildProxyUrl(username, password, `asn_${asn}`);
+  const targetUrl = `https://${domain}/`;
+  return sampleProxyMajority(proxyUrl, targetUrl, `AS${asn}`);
 }
 
 async function checkDomain(domain) {
@@ -170,6 +211,14 @@ async function checkDomain(domain) {
   const residential = await checkViaResidentialProxy(domain);
   if (residential) {
     nodes[RESIDENTIAL_NODE] = { label: NODE_LABELS[RESIDENTIAL_NODE], isIndonesia: true, ...residential };
+  }
+
+  for (const { asn } of KNOWN_PROBLEM_ASNS) {
+    const asnResult = await checkViaAsnProxy(domain, asn);
+    if (asnResult) {
+      const key = asnNodeKey(asn);
+      nodes[key] = { label: NODE_LABELS[key], isIndonesia: true, ...asnResult };
+    }
   }
 
   for (const node of ALL_NODES) {
@@ -201,6 +250,7 @@ async function loadJson(path, fallback) {
 const VERDICT_TEXT = {
   accessible: "bisa diakses normal dari Indonesia",
   blocked_in_indonesia: "terindikasi DIBLOKIR di Indonesia (Jakarta gagal, pembanding luar berhasil)",
+  blocked_on_isp: "bisa diakses secara nasional, tapi TERBLOKIR di ISP tertentu (mis. AS23679)",
   site_down: "TIDAK BISA DIAKSES (situs tampaknya down, gagal dari semua titik)",
   partial: "hasil tidak konsisten (sebagian titik Jakarta gagal)",
 };
