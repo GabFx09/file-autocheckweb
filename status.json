@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-08-15T04:54:24.471Z",
+  "generated_at": "2026-08-15T04:57:00.492Z",
   "sites": {
     "totomantapsuper.icu": {
       "domain": "totomantapsuper.icu",
-      "checked_at": "2026-08-15T04:54:09.192Z",
+      "checked_at": "2026-08-15T04:56:38.424Z",
       "verdict": "accessible",
       "nodes": {
         "id-residential-proxy": {
@@ -11,15 +11,15 @@
           "isIndonesia": true,
           "ok": true,
           "httpCode": "200",
-          "timeSec": 1.825,
-          "message": "OK"
+          "timeSec": 1.592,
+          "message": "4/4 ISP residensial berhasil akses"
         },
         "id1.node.check-host.net": {
           "label": "Jakarta, Indonesia (node 1, datacenter)",
           "isIndonesia": true,
           "ok": true,
           "httpCode": "200",
-          "timeSec": 0.148,
+          "timeSec": 0.145,
           "message": "OK"
         },
         "id2.node.check-host.net": {
@@ -27,7 +27,7 @@
           "isIndonesia": true,
           "ok": true,
           "httpCode": "200",
-          "timeSec": 0.204,
+          "timeSec": 0.18,
           "message": "OK"
         },
         "sg1.node.check-host.net": {
@@ -35,14 +35,14 @@
           "isIndonesia": false,
           "ok": true,
           "httpCode": "200",
-          "timeSec": 0.126,
+          "timeSec": 0.113,
           "message": "OK"
         }
       }
     },
     "ittbangjago.online": {
       "domain": "ittbangjago.online",
-      "checked_at": "2026-08-15T04:54:17.367Z",
+      "checked_at": "2026-08-15T04:56:48.707Z",
       "verdict": "accessible",
       "nodes": {
         "id-residential-proxy": {
@@ -50,15 +50,15 @@
           "isIndonesia": true,
           "ok": true,
           "httpCode": "200",
-          "timeSec": 3.933,
-          "message": "OK"
+          "timeSec": 1.337,
+          "message": "4/4 ISP residensial berhasil akses"
         },
         "id1.node.check-host.net": {
           "label": "Jakarta, Indonesia (node 1, datacenter)",
           "isIndonesia": true,
           "ok": true,
           "httpCode": "200",
-          "timeSec": 0.185,
+          "timeSec": 0.176,
           "message": "OK"
         },
         "id2.node.check-host.net": {
@@ -66,7 +66,7 @@
           "isIndonesia": true,
           "ok": true,
           "httpCode": "200",
-          "timeSec": 0.216,
+          "timeSec": 0.219,
           "message": "OK"
         },
         "sg1.node.check-host.net": {
@@ -74,14 +74,14 @@
           "isIndonesia": false,
           "ok": true,
           "httpCode": "200",
-          "timeSec": 0.137,
+          "timeSec": 0.159,
           "message": "OK"
         }
       }
     },
     "totomantap.top": {
       "domain": "totomantap.top",
-      "checked_at": "2026-08-15T04:54:23.471Z",
+      "checked_at": "2026-08-15T04:56:59.492Z",
       "verdict": "accessible",
       "nodes": {
         "id-residential-proxy": {
@@ -89,15 +89,15 @@
           "isIndonesia": true,
           "ok": true,
           "httpCode": "200",
-          "timeSec": 1.794,
-          "message": "OK"
+          "timeSec": 1.502,
+          "message": "4/4 ISP residensial berhasil akses"
         },
         "id1.node.check-host.net": {
           "label": "Jakarta, Indonesia (node 1, datacenter)",
           "isIndonesia": true,
           "ok": true,
           "httpCode": "200",
-          "timeSec": 0.44,
+          "timeSec": 0.121,
           "message": "OK"
         },
         "id2.node.check-host.net": {
@@ -105,7 +105,7 @@
           "isIndonesia": true,
           "ok": true,
           "httpCode": "200",
-          "timeSec": 0.146,
+          "timeSec": 0.186,
           "message": "OK"
         },
         "sg1.node.check-host.net": {
@@ -113,7 +113,7 @@
           "isIndonesia": false,
           "ok": true,
           "httpCode": "200",
-          "timeSec": 0.19,
+          "timeSec": 0.096,
           "message": "OK"
         }
       }
