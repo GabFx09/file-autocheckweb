@@ -44,11 +44,13 @@ const RESIDENTIAL_NODE = "id-residential-proxy";
 // exit pool hits it — most residential peers apparently have public DNS
 // (8.8.8.8 etc.) configured rather than Telkom's own default resolver, so
 // only a small fraction of the pool replicates what a typical subscriber
-// actually experiences. Needs a much bigger sample size than the other two
-// ASNs to have a reasonable catch rate per run.
+// actually experiences. At 2.5% true rate, 100 samples gives ~92% odds of
+// catching it per run (still not 100% — this is an accepted, explained
+// tradeoff, not a bug, given the runtime cost of pushing samples higher: at
+// ~1.5s/sample this ASN alone costs ~2.5min/domain, ~12-13min for 5 domains).
 const KNOWN_PROBLEM_ASNS = [
   { asn: "23693", label: "AS23693 PT. Telekomunikasi Selular (Telkomsel)" },
-  { asn: "7713", label: "AS7713 PT Telekomunikasi Indonesia (Indihome)", samples: 40 },
+  { asn: "7713", label: "AS7713 PT Telekomunikasi Indonesia (Indihome)", samples: 100 },
 ];
 
 function asnNodeKey(asn) {
@@ -471,7 +473,7 @@ async function main() {
       result = await Promise.race([
         checkDomain(domain),
         new Promise((_, reject) =>
-          setTimeout(() => reject(new Error("Timed out after 180s checking this domain")), 180000)
+          setTimeout(() => reject(new Error("Timed out after 300s checking this domain")), 300000)
         ),
       ]);
     } catch (err) {
