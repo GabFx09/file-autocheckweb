@@ -29,9 +29,25 @@ const RESIDENTIAL_NODE = "id-residential-proxy";
 // what a real user reported as a consistent ERR_TIMED_OUT in-browser even
 // though check-host.net, curl.exe, and the country-wide residential check all
 // read "accessible" for the same domain at the same time.
+//
+// AS7713 (Telkom/Indihome) added 2026-08-15 after a user report that
+// imperialhokipaus.com read fully clean on every ASN we checked (including
+// AS7713 at the standard 12 samples) while their real Indihome connection's
+// own DNS resolver flat-out failed to resolve the domain (nslookup timed
+// out). Root cause found with 40 samples: 1/40 hit a genuine DNS-redirect —
+// TLS handshake completes fine, but against Komdigi's own landing server
+// (cert CN=internetpositif.id, issued by Let's Encrypt, ironically expired).
+// This is real DNS-spoofing/redirection (a mechanism distinct from the
+// TLS-intercepting middleboxes above), but only ~2.5% of Webshare's AS7713
+// exit pool hits it — most residential peers apparently have public DNS
+// (8.8.8.8 etc.) configured rather than Telkom's own default resolver, so
+// only a small fraction of the pool replicates what a typical subscriber
+// actually experiences. Needs a much bigger sample size than the other two
+// ASNs to have a reasonable catch rate per run.
 const KNOWN_PROBLEM_ASNS = [
   { asn: "23679", label: "AS23679 PT Media Antar Nusa (Medan)" },
   { asn: "23693", label: "AS23693 PT. Telekomunikasi Selular (Telkomsel)" },
+  { asn: "7713", label: "AS7713 PT Telekomunikasi Indonesia (Indihome)", samples: 40 },
 ];
 
 function asnNodeKey(asn) {
@@ -344,14 +360,14 @@ async function checkViaResidentialProxy(domain) {
   return sampleProxyMajority(auth, targetUrl, "ISP residensial");
 }
 
-async function checkViaAsnProxy(domain, asn) {
+async function checkViaAsnProxy(domain, asn, samples = ASN_PROXY_SAMPLES) {
   const username = process.env.WEBSHARE_USERNAME;
   const password = process.env.WEBSHARE_PASSWORD;
   if (!username || !password) return null;
 
   const auth = buildProxyAuth(username, password, `asn_${asn}`);
   const targetUrl = `https://${domain}/`;
-  return sampleProxyMajority(auth, targetUrl, `AS${asn}`, { anyFailureBlocks: true, samples: ASN_PROXY_SAMPLES });
+  return sampleProxyMajority(auth, targetUrl, `AS${asn}`, { anyFailureBlocks: true, samples });
 }
 
 async function checkDomain(domain) {
@@ -375,8 +391,8 @@ async function checkDomain(domain) {
     nodes[RESIDENTIAL_NODE] = { label: NODE_LABELS[RESIDENTIAL_NODE], isIndonesia: true, ...residential };
   }
 
-  for (const { asn } of KNOWN_PROBLEM_ASNS) {
-    const asnResult = await checkViaAsnProxy(domain, asn);
+  for (const { asn, samples } of KNOWN_PROBLEM_ASNS) {
+    const asnResult = await checkViaAsnProxy(domain, asn, samples);
     if (asnResult) {
       const key = asnNodeKey(asn);
       nodes[key] = { label: NODE_LABELS[key], isIndonesia: true, ...asnResult };
@@ -454,7 +470,7 @@ async function main() {
       result = await Promise.race([
         checkDomain(domain),
         new Promise((_, reject) =>
-          setTimeout(() => reject(new Error("Timed out after 120s checking this domain")), 120000)
+          setTimeout(() => reject(new Error("Timed out after 180s checking this domain")), 180000)
         ),
       ]);
     } catch (err) {
