@@ -13,12 +13,14 @@ const REF_NODE = "sg1.node.check-host.net";
 const ALL_NODES = [...ID_NODES, REF_NODE];
 const RESIDENTIAL_NODE = "id-residential-proxy";
 
-// ISPs previously confirmed (via real VPN test + ASN-targeted proxy diagnostics)
-// to sometimes block totomantap.top even when country-wide sampling reads
-// accessible. Diagnostic on 2026-08-15 found ~91% baseline success rate through
-// AS23679 itself (55 samples, 5 fails, same exit IP flipping ok/fail between
-// requests seconds apart) — the block is intermittent/probabilistic, not a
-// static per-IP block.
+// ISPs confirmed (via real VPN test + ASN-targeted proxy diagnostics) to
+// sometimes block domains even when country-wide sampling reads accessible.
+// Restricted to major nationwide ISPs a typical visitor is likely to
+// actually use — AS23679 (PT Media Antar Nusa, a small Medan-only regional
+// ISP) was removed 2026-08-15 after its confirmed-real FortiGate interception
+// (91% baseline success, ~15-25% on some domains) kept flagging domains the
+// user could personally verify as accessible on their own (much larger)
+// ISPs, since it isn't representative of most visitors' experience.
 //
 // AS23693 (Telkomsel) added 2026-08-15 after directly capturing the block
 // mechanism: a TLS-intercepting middlebox on that carrier substitutes its own
@@ -45,7 +47,6 @@ const RESIDENTIAL_NODE = "id-residential-proxy";
 // actually experiences. Needs a much bigger sample size than the other two
 // ASNs to have a reasonable catch rate per run.
 const KNOWN_PROBLEM_ASNS = [
-  { asn: "23679", label: "AS23679 PT Media Antar Nusa (Medan)" },
   { asn: "23693", label: "AS23693 PT. Telekomunikasi Selular (Telkomsel)" },
   { asn: "7713", label: "AS7713 PT Telekomunikasi Indonesia (Indihome)", samples: 40 },
 ];
@@ -428,7 +429,7 @@ async function loadJson(path, fallback) {
 const VERDICT_TEXT = {
   accessible: "bisa diakses normal dari Indonesia",
   blocked_in_indonesia: "terindikasi DIBLOKIR di Indonesia (Jakarta gagal, pembanding luar berhasil)",
-  blocked_on_isp: "bisa diakses secara nasional, tapi TERBLOKIR di ISP tertentu (mis. AS23679)",
+  blocked_on_isp: "bisa diakses secara nasional, tapi TERBLOKIR di ISP tertentu (mis. Telkomsel/Indihome)",
   site_down: "TIDAK BISA DIAKSES (situs tampaknya down, gagal dari semua titik)",
   partial: "hasil tidak konsisten (sebagian titik Jakarta gagal)",
 };
