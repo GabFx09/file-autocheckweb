@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-08-18T21:25:39.128Z",
+  "generated_at": "2026-08-18T21:52:38.261Z",
   "sites": {
     "totomantapsuper.icu": {
       "domain": "totomantapsuper.icu",
-      "checked_at": "2026-08-18T21:16:28.486Z",
+      "checked_at": "2026-08-18T21:45:50.264Z",
       "verdict": "blocked_in_indonesia",
       "nodes": {
         "id-residential-proxy": {
@@ -35,7 +35,7 @@
           "isIndonesia": true,
           "ok": true,
           "httpCode": "200",
-          "timeSec": 0.138,
+          "timeSec": 0.152,
           "message": "OK"
         },
         "id2.node.check-host.net": {
@@ -43,7 +43,7 @@
           "isIndonesia": true,
           "ok": true,
           "httpCode": "200",
-          "timeSec": 0.187,
+          "timeSec": 0.408,
           "message": "OK"
         },
         "sg1.node.check-host.net": {
@@ -51,14 +51,14 @@
           "isIndonesia": false,
           "ok": true,
           "httpCode": "200",
-          "timeSec": 0.087,
+          "timeSec": 0.379,
           "message": "OK"
         }
       }
     },
     "ittbangjago.online": {
       "domain": "ittbangjago.online",
-      "checked_at": "2026-08-18T21:16:53.348Z",
+      "checked_at": "2026-08-18T21:46:13.446Z",
       "verdict": "blocked_in_indonesia",
       "nodes": {
         "id-residential-proxy": {
@@ -90,7 +90,7 @@
           "isIndonesia": true,
           "ok": true,
           "httpCode": "200",
-          "timeSec": 0.474,
+          "timeSec": 0.2,
           "message": "OK"
         },
         "id2.node.check-host.net": {
@@ -98,7 +98,7 @@
           "isIndonesia": true,
           "ok": true,
           "httpCode": "200",
-          "timeSec": 0.193,
+          "timeSec": 0.214,
           "message": "OK"
         },
         "sg1.node.check-host.net": {
@@ -106,14 +106,14 @@
           "isIndonesia": false,
           "ok": true,
           "httpCode": "200",
-          "timeSec": 0.117,
+          "timeSec": 0.443,
           "message": "OK"
         }
       }
     },
     "totomantap.top": {
       "domain": "totomantap.top",
-      "checked_at": "2026-08-18T21:21:20.895Z",
+      "checked_at": "2026-08-18T21:46:52.950Z",
       "verdict": "blocked_in_indonesia",
       "nodes": {
         "id-residential-proxy": {
@@ -145,7 +145,7 @@
           "isIndonesia": true,
           "ok": true,
           "httpCode": "200",
-          "timeSec": 0.218,
+          "timeSec": 0.129,
           "message": "OK"
         },
         "id2.node.check-host.net": {
@@ -153,7 +153,7 @@
           "isIndonesia": true,
           "ok": true,
           "httpCode": "200",
-          "timeSec": 0.372,
+          "timeSec": 0.148,
           "message": "OK"
         },
         "sg1.node.check-host.net": {
@@ -161,14 +161,14 @@
           "isIndonesia": false,
           "ok": true,
           "httpCode": "200",
-          "timeSec": 0.158,
+          "timeSec": 0.41,
           "message": "OK"
         }
       }
     },
     "totomantapmaju.icu": {
       "domain": "totomantapmaju.icu",
-      "checked_at": "2026-08-18T21:22:09.824Z",
+      "checked_at": "2026-08-18T21:49:09.156Z",
       "verdict": "blocked_in_indonesia",
       "nodes": {
         "id-residential-proxy": {
@@ -200,7 +200,7 @@
           "isIndonesia": true,
           "ok": true,
           "httpCode": "200",
-          "timeSec": 0.232,
+          "timeSec": 0.39,
           "message": "OK"
         },
         "id2.node.check-host.net": {
@@ -208,7 +208,7 @@
           "isIndonesia": true,
           "ok": true,
           "httpCode": "200",
-          "timeSec": 0.133,
+          "timeSec": 0.156,
           "message": "OK"
         },
         "sg1.node.check-host.net": {
@@ -216,14 +216,14 @@
           "isIndonesia": false,
           "ok": true,
           "httpCode": "200",
-          "timeSec": 0.099,
+          "timeSec": 0.091,
           "message": "OK"
         }
       }
     },
     "imperialhokipaus.com": {
       "domain": "imperialhokipaus.com",
-      "checked_at": "2026-08-18T21:22:53.603Z",
+      "checked_at": "2026-08-18T21:50:44.072Z",
       "verdict": "blocked_in_indonesia",
       "nodes": {
         "id-residential-proxy": {
@@ -255,7 +255,7 @@
           "isIndonesia": true,
           "ok": true,
           "httpCode": "200",
-          "timeSec": 0.231,
+          "timeSec": 0.213,
           "message": "OK"
         },
         "id2.node.check-host.net": {
@@ -263,7 +263,7 @@
           "isIndonesia": true,
           "ok": true,
           "httpCode": "200",
-          "timeSec": 0.254,
+          "timeSec": 0.426,
           "message": "OK"
         },
         "sg1.node.check-host.net": {
@@ -271,14 +271,14 @@
           "isIndonesia": false,
           "ok": true,
           "httpCode": "200",
-          "timeSec": 0.362,
+          "timeSec": 0.122,
           "message": "OK"
         }
       }
     },
     "lenteraone.com": {
       "domain": "lenteraone.com",
-      "checked_at": "2026-08-18T21:24:09.866Z",
+      "checked_at": "2026-08-18T21:51:24.134Z",
       "verdict": "blocked_in_indonesia",
       "nodes": {
         "id-residential-proxy": {
@@ -310,7 +310,7 @@
           "isIndonesia": true,
           "ok": true,
           "httpCode": "200",
-          "timeSec": 0.411,
+          "timeSec": 0.317,
           "message": "OK"
         },
         "id2.node.check-host.net": {
@@ -318,7 +318,7 @@
           "isIndonesia": true,
           "ok": true,
           "httpCode": "200",
-          "timeSec": 0.168,
+          "timeSec": 0.245,
           "message": "OK"
         },
         "sg1.node.check-host.net": {
@@ -326,14 +326,14 @@
           "isIndonesia": false,
           "ok": true,
           "httpCode": "200",
-          "timeSec": 0.123,
+          "timeSec": 0.35,
           "message": "OK"
         }
       }
     },
     "datascienceriot.com": {
       "domain": "datascienceriot.com",
-      "checked_at": "2026-08-18T21:25:38.127Z",
+      "checked_at": "2026-08-18T21:52:37.260Z",
       "verdict": "blocked_in_indonesia",
       "nodes": {
         "id-residential-proxy": {
@@ -365,7 +365,7 @@
           "isIndonesia": true,
           "ok": true,
           "httpCode": "200",
-          "timeSec": 0.327,
+          "timeSec": 0.29,
           "message": "OK"
         },
         "id2.node.check-host.net": {
@@ -373,7 +373,7 @@
           "isIndonesia": true,
           "ok": true,
           "httpCode": "200",
-          "timeSec": 0.488,
+          "timeSec": 0.442,
           "message": "OK"
         },
         "sg1.node.check-host.net": {
@@ -381,7 +381,7 @@
           "isIndonesia": false,
           "ok": true,
           "httpCode": "200",
-          "timeSec": 0.149,
+          "timeSec": 0.378,
           "message": "OK"
         }
       }
