@@ -13,6 +13,13 @@ const REF_NODE = "sg1.node.check-host.net";
 const ALL_NODES = [...ID_NODES, REF_NODE];
 const RESIDENTIAL_NODE = "id-residential-proxy";
 
+// Set when Webshare's proxy gateway itself rejects a CONNECT (billing/quota/
+// auth — see connectThroughProxy's proxyServiceError tagging). Tracked at
+// module scope so main() can send one distinct Telegram warning per run
+// instead of drowning the normal per-domain alerts, or worse, letting every
+// domain silently misreport as blocked with no signal to the operator.
+let proxyServiceErrorSeen = null;
+
 // ISPs confirmed (via real VPN test + ASN-targeted proxy diagnostics) to
 // sometimes block domains even when country-wide sampling reads accessible.
 // Restricted to major nationwide ISPs a typical visitor is likely to
@@ -189,7 +196,21 @@ function connectThroughProxy(auth, targetHost, targetPort) {
           resolve(socket);
         } else {
           socket.destroy();
-          reject(new Error(`Proxy CONNECT failed: ${statusLine}`));
+          const err = new Error(`Proxy CONNECT failed: ${statusLine}`);
+          // A billing/auth/quota response from the proxy GATEWAY itself
+          // (401/402/403/407/429) means Webshare is refusing service
+          // entirely — every sample will fail identically regardless of
+          // ASN or domain, and it says nothing about whether the target is
+          // actually blocked in Indonesia. Must not be conflated with a
+          // real network-level block. Confirmed 2026-08-19: an exhausted
+          // Webshare account/quota produced HTTP 402 on every single
+          // sample, which — before this fix — got reported as
+          // "blocked_in_indonesia" for every monitored domain at once
+          // (including obviously-unblocked sites like liputan6.com).
+          if (/\s(401|402|403|407|429)\s/.test(statusLine)) {
+            err.proxyServiceError = true;
+          }
+          reject(err);
         }
       }
     };
@@ -316,7 +337,13 @@ async function residentialSampleOnce(auth, targetUrl) {
       return await residentialFetchOnce(auth, targetUrl);
     } catch (err) {
       if (i === 1 || err.stage !== "proxy-connect") {
-        return { ok: false, httpCode: null, timeSec: null, message: err.message || "Gagal terhubung lewat proxy" };
+        return {
+          ok: false,
+          httpCode: null,
+          timeSec: null,
+          message: err.message || "Gagal terhubung lewat proxy",
+          proxyServiceError: !!err.proxyServiceError,
+        };
       }
     }
   }
@@ -332,7 +359,18 @@ function buildProxyAuth(username, password, targeting) {
 async function sampleProxyMajority(auth, targetUrl, label, { anyFailureBlocks = false, samples: sampleCount = PROXY_SAMPLES } = {}) {
   const samples = [];
   for (let i = 0; i < sampleCount; i++) {
-    samples.push(await residentialSampleOnce(auth, targetUrl));
+    const sample = await residentialSampleOnce(auth, targetUrl);
+    // A proxy-service-level error (Webshare rejecting the CONNECT itself —
+    // billing/quota/auth, e.g. HTTP 402) will fail identically on every
+    // remaining sample too. Stop wasting the rest of the budget and signal
+    // "unavailable" to the caller (null) instead of "blocked": this says
+    // nothing about whether the target is actually reachable from Indonesia.
+    if (sample.proxyServiceError) {
+      console.error(`Proxy service error saat cek ${label} untuk ${targetUrl}: ${sample.message}`);
+      proxyServiceErrorSeen = sample.message;
+      return null;
+    }
+    samples.push(sample);
   }
 
   const okCount = samples.filter((s) => s.ok).length;
@@ -505,6 +543,15 @@ async function main() {
   };
   await fs.writeFile("status.json", JSON.stringify(status, null, 2) + "\n", "utf8");
   console.log(JSON.stringify(status, null, 2));
+
+  if (proxyServiceErrorSeen) {
+    const safeReason = proxyServiceErrorSeen.replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]));
+    alerts.unshift(
+      `🔧 <b>Proxy Webshare bermasalah</b>\nGateway proxy menolak koneksi (${safeReason}). ` +
+        `Ini biasanya kuota/saldo Webshare habis atau langganan perlu diperpanjang — cek dashboard Webshare. ` +
+        `Selama ini belum diperbaiki, verdict domain di bawah TIDAK bisa dipercaya (proxy residensial tidak jalan sama sekali).`
+    );
+  }
 
   const token = process.env.TELEGRAM_BOT_TOKEN;
   const chatId = process.env.TELEGRAM_CHAT_ID;
