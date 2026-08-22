@@ -553,10 +553,15 @@ async function main() {
     );
   }
 
+  const settings = await loadJson("settings.json", { telegramNotifications: true });
+  const notificationsEnabled = settings.telegramNotifications !== false;
+
   const token = process.env.TELEGRAM_BOT_TOKEN;
   const chatId = process.env.TELEGRAM_CHAT_ID;
   if (alerts.length > 0) {
-    if (token && chatId) {
+    if (!notificationsEnabled) {
+      console.log(`Ada ${alerts.length} perubahan status, tapi notifikasi Telegram sedang dimatikan lewat panel admin.`);
+    } else if (token && chatId) {
       const text = `<b>Pembaruan status website</b>\n\n${alerts.join("\n\n")}`;
       await sendTelegram(token, chatId, text);
       console.log(`Terkirim ${alerts.length} notifikasi ke Telegram.`);

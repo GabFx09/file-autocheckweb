@@ -303,6 +303,12 @@
             </div>
           </div>
 
+          <label class="field-label">Notifikasi Telegram</label>
+          <div class="field-row" style="flex-direction:row; align-items:center; gap:10px;">
+            <button class="secondary-btn" id="telegram-toggle-btn" style="flex:1;" disabled>Memuat...</button>
+          </div>
+          <div class="field-hint" id="telegram-hint"></div>
+
           <label class="field-label">Tambah domain</label>
           <div class="field-row">
             <input type="text" id="new-domain-input" placeholder="contoh: situsku.com" autocomplete="off" />
@@ -428,6 +434,8 @@ const GH_OWNER = "GabFx09";
 const GH_REPO = "file-autocheckweb";
 const GH_PATH = "domains.json";
 const GH_API = `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${GH_PATH}`;
+const SETTINGS_PATH = "settings.json";
+const SETTINGS_API = `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${SETTINGS_PATH}`;
 const PAT_KEY = "gh_pat_file_autocheckweb";
 
 const tokenSection = document.getElementById("token-section");
@@ -552,6 +560,7 @@ patSaveBtn.addEventListener("click", () => {
   refreshTokenUI();
   setMsg("Token tersimpan di browser ini.", "success");
   renderDomainList();
+  loadTelegramToggle();
 });
 
 patClearBtn.addEventListener("click", () => {
@@ -559,6 +568,7 @@ patClearBtn.addEventListener("click", () => {
   refreshTokenUI();
   setMsg("Token dihapus dari browser ini.", "info");
   renderDomainList();
+  loadTelegramToggle();
 });
 
 addDomainBtn.addEventListener("click", async () => {
@@ -600,8 +610,99 @@ async function removeDomain(domain) {
   }
 }
 
+// ---- Admin panel: toggle Telegram notifications via settings.json ----
+const telegramToggleBtn = document.getElementById("telegram-toggle-btn");
+const telegramHint = document.getElementById("telegram-hint");
+
+async function fetchSettingsFile() {
+  const res = await fetch(SETTINGS_API + "?_=" + Date.now(), {
+    headers: { Accept: "application/vnd.github+json" },
+    cache: "no-store",
+  });
+  if (!res.ok) throw new Error("Gagal memuat settings.json (HTTP " + res.status + ")");
+  const data = await res.json();
+  const parsed = JSON.parse(b64DecodeUtf8(data.content));
+  return { settings: parsed, sha: data.sha };
+}
+
+async function commitSettings(newSettings, message, retry = true) {
+  const token = getToken();
+  if (!token) {
+    setMsg("Simpan token GitHub dulu sebelum mengubah notifikasi.", "error");
+    return false;
+  }
+  const { sha } = await fetchSettingsFile();
+  const body = {
+    message,
+    content: b64EncodeUtf8(JSON.stringify(newSettings, null, 2) + "\n"),
+    sha,
+    branch: "main",
+  };
+  const res = await fetch(SETTINGS_API, {
+    method: "PUT",
+    headers: {
+      Authorization: "Bearer " + token,
+      Accept: "application/vnd.github+json",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(body),
+  });
+  if (res.status === 409 && retry) {
+    return commitSettings(newSettings, message, false);
+  }
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    if (res.status === 401 || res.status === 403) {
+      throw new Error("Token tidak valid atau tidak punya izin write ke repo ini.");
+    }
+    throw new Error("Gagal menyimpan: " + (err.message || res.status));
+  }
+  return true;
+}
+
+function renderTelegramToggle(enabled) {
+  const token = getToken();
+  telegramToggleBtn.disabled = !token;
+  telegramToggleBtn.textContent = enabled ? "🔔 Notifikasi Aktif — klik untuk matikan" : "🔕 Notifikasi Dimatikan — klik untuk aktifkan";
+  telegramHint.textContent = token
+    ? "Saat dimatikan, pengecekan tetap berjalan tapi alert Telegram tidak dikirim."
+    : "Simpan token GitHub untuk bisa mengubah pengaturan ini.";
+}
+
+async function loadTelegramToggle() {
+  try {
+    const { settings } = await fetchSettingsFile();
+    const enabled = settings.telegramNotifications !== false;
+    telegramToggleBtn.dataset.enabled = String(enabled);
+    renderTelegramToggle(enabled);
+  } catch (e) {
+    telegramToggleBtn.textContent = "Gagal memuat status";
+    telegramHint.textContent = e.message;
+  }
+}
+
+telegramToggleBtn.addEventListener("click", async () => {
+  const current = telegramToggleBtn.dataset.enabled === "true";
+  const next = !current;
+  telegramToggleBtn.disabled = true;
+  setMsg("Menyimpan...", "info");
+  try {
+    const { settings } = await fetchSettingsFile();
+    const newSettings = { ...settings, telegramNotifications: next };
+    await commitSettings(newSettings, next ? "Enable Telegram notifications" : "Disable Telegram notifications");
+    telegramToggleBtn.dataset.enabled = String(next);
+    renderTelegramToggle(next);
+    setMsg(next ? "Notifikasi Telegram diaktifkan." : "Notifikasi Telegram dimatikan.", "success");
+  } catch (e) {
+    setMsg(e.message, "error");
+  } finally {
+    telegramToggleBtn.disabled = !getToken();
+  }
+});
+
 refreshTokenUI();
 renderDomainList();
+loadTelegramToggle();
 </script>
 </body>
 </html>
