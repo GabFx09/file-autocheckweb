@@ -1,251 +1,251 @@
 {
-  "generated_at": "2026-08-22T10:47:29.509Z",
+  "generated_at": "2026-08-22T11:15:08.276Z",
   "sites": {
     "totomantapsuper.icu": {
       "domain": "totomantapsuper.icu",
-      "checked_at": "2026-08-22T10:47:02.322Z",
-      "verdict": "site_down",
+      "checked_at": "2026-08-22T11:14:16.113Z",
+      "verdict": "accessible",
       "nodes": {
         "id1.node.check-host.net": {
           "label": "Jakarta, Indonesia (node 1, datacenter)",
           "isIndonesia": true,
-          "ok": false,
-          "httpCode": null,
-          "timeSec": null,
-          "message": "Tidak ada respons"
+          "ok": true,
+          "httpCode": "200",
+          "timeSec": 0.193,
+          "message": "OK"
         },
         "id2.node.check-host.net": {
           "label": "Jakarta, Indonesia (node 2, datacenter)",
           "isIndonesia": true,
-          "ok": false,
-          "httpCode": null,
-          "timeSec": null,
-          "message": "Tidak ada respons"
+          "ok": true,
+          "httpCode": "200",
+          "timeSec": 0.201,
+          "message": "OK"
         },
         "sg1.node.check-host.net": {
           "label": "Singapore (pembanding)",
           "isIndonesia": false,
-          "ok": false,
-          "httpCode": null,
-          "timeSec": null,
-          "message": "Tidak ada respons"
+          "ok": true,
+          "httpCode": "200",
+          "timeSec": 0.102,
+          "message": "OK"
         }
       }
     },
     "ittbangjago.online": {
       "domain": "ittbangjago.online",
-      "checked_at": "2026-08-22T10:47:06.084Z",
-      "verdict": "site_down",
+      "checked_at": "2026-08-22T11:14:23.192Z",
+      "verdict": "accessible",
       "nodes": {
         "id1.node.check-host.net": {
           "label": "Jakarta, Indonesia (node 1, datacenter)",
           "isIndonesia": true,
-          "ok": false,
-          "httpCode": null,
-          "timeSec": null,
-          "message": "Tidak ada respons"
+          "ok": true,
+          "httpCode": "200",
+          "timeSec": 0.209,
+          "message": "OK"
         },
         "id2.node.check-host.net": {
           "label": "Jakarta, Indonesia (node 2, datacenter)",
           "isIndonesia": true,
-          "ok": false,
-          "httpCode": null,
-          "timeSec": null,
-          "message": "Tidak ada respons"
+          "ok": true,
+          "httpCode": "200",
+          "timeSec": 0.164,
+          "message": "OK"
         },
         "sg1.node.check-host.net": {
           "label": "Singapore (pembanding)",
           "isIndonesia": false,
-          "ok": false,
-          "httpCode": null,
-          "timeSec": null,
-          "message": "Tidak ada respons"
+          "ok": true,
+          "httpCode": "200",
+          "timeSec": 0.12,
+          "message": "OK"
         }
       }
     },
     "totomantap.top": {
       "domain": "totomantap.top",
-      "checked_at": "2026-08-22T10:47:10.232Z",
-      "verdict": "site_down",
+      "checked_at": "2026-08-22T11:14:30.290Z",
+      "verdict": "accessible",
       "nodes": {
         "id1.node.check-host.net": {
           "label": "Jakarta, Indonesia (node 1, datacenter)",
           "isIndonesia": true,
-          "ok": false,
-          "httpCode": null,
-          "timeSec": null,
-          "message": "Tidak ada respons"
+          "ok": true,
+          "httpCode": "200",
+          "timeSec": 0.441,
+          "message": "OK"
         },
         "id2.node.check-host.net": {
           "label": "Jakarta, Indonesia (node 2, datacenter)",
           "isIndonesia": true,
-          "ok": false,
-          "httpCode": null,
-          "timeSec": null,
-          "message": "Tidak ada respons"
+          "ok": true,
+          "httpCode": "200",
+          "timeSec": 0.151,
+          "message": "OK"
         },
         "sg1.node.check-host.net": {
           "label": "Singapore (pembanding)",
           "isIndonesia": false,
-          "ok": false,
-          "httpCode": null,
-          "timeSec": null,
-          "message": "Tidak ada respons"
+          "ok": true,
+          "httpCode": "200",
+          "timeSec": 0.159,
+          "message": "OK"
         }
       }
     },
     "totomantapmaju.icu": {
       "domain": "totomantapmaju.icu",
-      "checked_at": "2026-08-22T10:47:13.982Z",
-      "verdict": "site_down",
+      "checked_at": "2026-08-22T11:14:37.086Z",
+      "verdict": "accessible",
       "nodes": {
         "id1.node.check-host.net": {
           "label": "Jakarta, Indonesia (node 1, datacenter)",
           "isIndonesia": true,
-          "ok": false,
-          "httpCode": null,
-          "timeSec": null,
-          "message": "Tidak ada respons"
+          "ok": true,
+          "httpCode": "200",
+          "timeSec": 0.897,
+          "message": "OK"
         },
         "id2.node.check-host.net": {
           "label": "Jakarta, Indonesia (node 2, datacenter)",
           "isIndonesia": true,
-          "ok": false,
-          "httpCode": null,
-          "timeSec": null,
-          "message": "Tidak ada respons"
+          "ok": true,
+          "httpCode": "200",
+          "timeSec": 0.176,
+          "message": "OK"
         },
         "sg1.node.check-host.net": {
           "label": "Singapore (pembanding)",
           "isIndonesia": false,
-          "ok": false,
-          "httpCode": null,
-          "timeSec": null,
-          "message": "Tidak ada respons"
+          "ok": true,
+          "httpCode": "200",
+          "timeSec": 0.096,
+          "message": "OK"
         }
       }
     },
     "imperialhokipaus.com": {
       "domain": "imperialhokipaus.com",
-      "checked_at": "2026-08-22T10:47:17.898Z",
-      "verdict": "site_down",
+      "checked_at": "2026-08-22T11:14:43.764Z",
+      "verdict": "accessible",
       "nodes": {
         "id1.node.check-host.net": {
           "label": "Jakarta, Indonesia (node 1, datacenter)",
           "isIndonesia": true,
-          "ok": false,
-          "httpCode": null,
-          "timeSec": null,
-          "message": "Tidak ada respons"
+          "ok": true,
+          "httpCode": "200",
+          "timeSec": 0.161,
+          "message": "OK"
         },
         "id2.node.check-host.net": {
           "label": "Jakarta, Indonesia (node 2, datacenter)",
           "isIndonesia": true,
-          "ok": false,
-          "httpCode": null,
-          "timeSec": null,
-          "message": "Tidak ada respons"
+          "ok": true,
+          "httpCode": "200",
+          "timeSec": 0.188,
+          "message": "OK"
         },
         "sg1.node.check-host.net": {
           "label": "Singapore (pembanding)",
           "isIndonesia": false,
-          "ok": false,
-          "httpCode": null,
-          "timeSec": null,
-          "message": "Tidak ada respons"
+          "ok": true,
+          "httpCode": "200",
+          "timeSec": 0.152,
+          "message": "OK"
         }
       }
     },
     "lenteraone.com": {
       "domain": "lenteraone.com",
-      "checked_at": "2026-08-22T10:47:21.364Z",
-      "verdict": "site_down",
+      "checked_at": "2026-08-22T11:14:50.548Z",
+      "verdict": "accessible",
       "nodes": {
         "id1.node.check-host.net": {
           "label": "Jakarta, Indonesia (node 1, datacenter)",
           "isIndonesia": true,
-          "ok": false,
-          "httpCode": null,
-          "timeSec": null,
-          "message": "Tidak ada respons"
+          "ok": true,
+          "httpCode": "200",
+          "timeSec": 0.177,
+          "message": "OK"
         },
         "id2.node.check-host.net": {
           "label": "Jakarta, Indonesia (node 2, datacenter)",
           "isIndonesia": true,
-          "ok": false,
-          "httpCode": null,
-          "timeSec": null,
-          "message": "Tidak ada respons"
+          "ok": true,
+          "httpCode": "200",
+          "timeSec": 0.202,
+          "message": "OK"
         },
         "sg1.node.check-host.net": {
           "label": "Singapore (pembanding)",
           "isIndonesia": false,
-          "ok": false,
-          "httpCode": null,
-          "timeSec": null,
-          "message": "Tidak ada respons"
+          "ok": true,
+          "httpCode": "200",
+          "timeSec": 0.12,
+          "message": "OK"
         }
       }
     },
     "datascienceriot.com": {
       "domain": "datascienceriot.com",
-      "checked_at": "2026-08-22T10:47:24.885Z",
-      "verdict": "site_down",
+      "checked_at": "2026-08-22T11:15:00.592Z",
+      "verdict": "accessible",
       "nodes": {
         "id1.node.check-host.net": {
           "label": "Jakarta, Indonesia (node 1, datacenter)",
           "isIndonesia": true,
-          "ok": false,
-          "httpCode": null,
-          "timeSec": null,
-          "message": "Tidak ada respons"
+          "ok": true,
+          "httpCode": "200",
+          "timeSec": 0.184,
+          "message": "OK"
         },
         "id2.node.check-host.net": {
           "label": "Jakarta, Indonesia (node 2, datacenter)",
           "isIndonesia": true,
-          "ok": false,
-          "httpCode": null,
-          "timeSec": null,
-          "message": "Tidak ada respons"
+          "ok": true,
+          "httpCode": "200",
+          "timeSec": 0.308,
+          "message": "OK"
         },
         "sg1.node.check-host.net": {
           "label": "Singapore (pembanding)",
           "isIndonesia": false,
-          "ok": false,
-          "httpCode": null,
-          "timeSec": null,
-          "message": "Tidak ada respons"
+          "ok": true,
+          "httpCode": "200",
+          "timeSec": 0.142,
+          "message": "OK"
         }
       }
     },
     "www.liputan6.com": {
       "domain": "www.liputan6.com",
-      "checked_at": "2026-08-22T10:47:28.507Z",
-      "verdict": "site_down",
+      "checked_at": "2026-08-22T11:15:07.275Z",
+      "verdict": "accessible",
       "nodes": {
         "id1.node.check-host.net": {
           "label": "Jakarta, Indonesia (node 1, datacenter)",
           "isIndonesia": true,
-          "ok": false,
-          "httpCode": null,
-          "timeSec": null,
-          "message": "Tidak ada respons"
+          "ok": true,
+          "httpCode": "200",
+          "timeSec": 0.114,
+          "message": "OK"
         },
         "id2.node.check-host.net": {
           "label": "Jakarta, Indonesia (node 2, datacenter)",
           "isIndonesia": true,
-          "ok": false,
-          "httpCode": null,
-          "timeSec": null,
-          "message": "Tidak ada respons"
+          "ok": true,
+          "httpCode": "200",
+          "timeSec": 0.106,
+          "message": "OK"
         },
         "sg1.node.check-host.net": {
           "label": "Singapore (pembanding)",
           "isIndonesia": false,
-          "ok": false,
-          "httpCode": null,
-          "timeSec": null,
-          "message": "Tidak ada respons"
+          "ok": true,
+          "httpCode": "200",
+          "timeSec": 0.049,
+          "message": "OK"
         }
       }
     }
