@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-10-29T00:11:53.719Z",
+  "generated_at": "2026-10-29T06:11:33.103Z",
   "sites": {
     "totomantapsuper.icu": {
       "domain": "totomantapsuper.icu",
-      "checked_at": "2026-10-29T00:07:51.534Z",
+      "checked_at": "2026-10-29T06:07:26.866Z",
       "verdict": "site_down",
       "nodes": {
         "id1.node.check-host.net": {
@@ -34,7 +34,7 @@
     },
     "ittbangjago.online": {
       "domain": "ittbangjago.online",
-      "checked_at": "2026-10-29T00:08:25.763Z",
+      "checked_at": "2026-10-29T06:08:01.976Z",
       "verdict": "site_down",
       "nodes": {
         "id1.node.check-host.net": {
@@ -65,7 +65,7 @@
     },
     "totomantap.top": {
       "domain": "totomantap.top",
-      "checked_at": "2026-10-29T00:09:00.209Z",
+      "checked_at": "2026-10-29T06:08:37.160Z",
       "verdict": "site_down",
       "nodes": {
         "id1.node.check-host.net": {
@@ -96,7 +96,7 @@
     },
     "totomantapmaju.icu": {
       "domain": "totomantapmaju.icu",
-      "checked_at": "2026-10-29T00:09:34.673Z",
+      "checked_at": "2026-10-29T06:09:12.305Z",
       "verdict": "site_down",
       "nodes": {
         "id1.node.check-host.net": {
@@ -127,7 +127,7 @@
     },
     "imperialhokipaus.com": {
       "domain": "imperialhokipaus.com",
-      "checked_at": "2026-10-29T00:10:09.093Z",
+      "checked_at": "2026-10-29T06:09:47.183Z",
       "verdict": "site_down",
       "nodes": {
         "id1.node.check-host.net": {
@@ -158,7 +158,7 @@
     },
     "lenteraone.com": {
       "domain": "lenteraone.com",
-      "checked_at": "2026-10-29T00:10:43.621Z",
+      "checked_at": "2026-10-29T06:10:22.380Z",
       "verdict": "site_down",
       "nodes": {
         "id1.node.check-host.net": {
@@ -189,7 +189,7 @@
     },
     "datascienceriot.com": {
       "domain": "datascienceriot.com",
-      "checked_at": "2026-10-29T00:11:18.074Z",
+      "checked_at": "2026-10-29T06:10:57.172Z",
       "verdict": "site_down",
       "nodes": {
         "id1.node.check-host.net": {
@@ -220,7 +220,7 @@
     },
     "www.liputan6.com": {
       "domain": "www.liputan6.com",
-      "checked_at": "2026-10-29T00:11:52.718Z",
+      "checked_at": "2026-10-29T06:11:32.102Z",
       "verdict": "site_down",
       "nodes": {
         "id1.node.check-host.net": {
