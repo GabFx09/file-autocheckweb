@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-11-11T08:42:19.484Z",
+  "generated_at": "2026-11-11T16:48:40.146Z",
   "sites": {
     "totomantapsuper.icu": {
       "domain": "totomantapsuper.icu",
-      "checked_at": "2026-11-11T08:41:33.425Z",
+      "checked_at": "2026-11-11T16:47:49.062Z",
       "verdict": "accessible",
       "nodes": {
         "id1.node.check-host.net": {
@@ -11,7 +11,7 @@
           "isIndonesia": true,
           "ok": true,
           "httpCode": "200",
-          "timeSec": 0.238,
+          "timeSec": 0.227,
           "message": "OK"
         },
         "id2.node.check-host.net": {
@@ -19,7 +19,7 @@
           "isIndonesia": true,
           "ok": true,
           "httpCode": "200",
-          "timeSec": 0.273,
+          "timeSec": 0.233,
           "message": "OK"
         },
         "sg1.node.check-host.net": {
@@ -27,14 +27,14 @@
           "isIndonesia": false,
           "ok": true,
           "httpCode": "200",
-          "timeSec": 0.736,
+          "timeSec": 0.202,
           "message": "OK"
         }
       }
     },
     "ittbangjago.online": {
       "domain": "ittbangjago.online",
-      "checked_at": "2026-11-11T08:41:39.877Z",
+      "checked_at": "2026-11-11T16:47:55.665Z",
       "verdict": "accessible",
       "nodes": {
         "id1.node.check-host.net": {
@@ -42,7 +42,7 @@
           "isIndonesia": true,
           "ok": true,
           "httpCode": "200",
-          "timeSec": 0.303,
+          "timeSec": 0.259,
           "message": "OK"
         },
         "id2.node.check-host.net": {
@@ -50,7 +50,7 @@
           "isIndonesia": true,
           "ok": true,
           "httpCode": "200",
-          "timeSec": 0.391,
+          "timeSec": 0.221,
           "message": "OK"
         },
         "sg1.node.check-host.net": {
@@ -58,14 +58,14 @@
           "isIndonesia": false,
           "ok": true,
           "httpCode": "200",
-          "timeSec": 0.218,
+          "timeSec": 0.214,
           "message": "OK"
         }
       }
     },
     "totomantap.top": {
       "domain": "totomantap.top",
-      "checked_at": "2026-11-11T08:41:46.670Z",
+      "checked_at": "2026-11-11T16:48:03.015Z",
       "verdict": "site_down",
       "nodes": {
         "id1.node.check-host.net": {
@@ -73,7 +73,7 @@
           "isIndonesia": true,
           "ok": false,
           "httpCode": null,
-          "timeSec": 0.389,
+          "timeSec": 0.379,
           "message": "Broken pipe"
         },
         "id2.node.check-host.net": {
@@ -81,7 +81,7 @@
           "isIndonesia": true,
           "ok": false,
           "httpCode": null,
-          "timeSec": 0.542,
+          "timeSec": 0.394,
           "message": "Broken pipe"
         },
         "sg1.node.check-host.net": {
@@ -89,14 +89,14 @@
           "isIndonesia": false,
           "ok": false,
           "httpCode": null,
-          "timeSec": 0.513,
+          "timeSec": 0.534,
           "message": "Broken pipe"
         }
       }
     },
     "totomantapmaju.icu": {
       "domain": "totomantapmaju.icu",
-      "checked_at": "2026-11-11T08:41:52.810Z",
+      "checked_at": "2026-11-11T16:48:12.683Z",
       "verdict": "accessible",
       "nodes": {
         "id1.node.check-host.net": {
@@ -104,7 +104,7 @@
           "isIndonesia": true,
           "ok": true,
           "httpCode": "200",
-          "timeSec": 0.628,
+          "timeSec": 2.254,
           "message": "OK"
         },
         "id2.node.check-host.net": {
@@ -112,7 +112,7 @@
           "isIndonesia": true,
           "ok": true,
           "httpCode": "200",
-          "timeSec": 0.244,
+          "timeSec": 0.296,
           "message": "OK"
         },
         "sg1.node.check-host.net": {
@@ -127,7 +127,7 @@
     },
     "imperialhokipaus.com": {
       "domain": "imperialhokipaus.com",
-      "checked_at": "2026-11-11T08:41:59.297Z",
+      "checked_at": "2026-11-11T16:48:19.136Z",
       "verdict": "accessible",
       "nodes": {
         "id1.node.check-host.net": {
@@ -135,7 +135,7 @@
           "isIndonesia": true,
           "ok": true,
           "httpCode": "200",
-          "timeSec": 0.474,
+          "timeSec": 0.309,
           "message": "OK"
         },
         "id2.node.check-host.net": {
@@ -143,7 +143,7 @@
           "isIndonesia": true,
           "ok": true,
           "httpCode": "200",
-          "timeSec": 0.264,
+          "timeSec": 0.281,
           "message": "OK"
         },
         "sg1.node.check-host.net": {
@@ -151,14 +151,14 @@
           "isIndonesia": false,
           "ok": true,
           "httpCode": "200",
-          "timeSec": 0.554,
+          "timeSec": 0.263,
           "message": "OK"
         }
       }
     },
     "lenteraone.com": {
       "domain": "lenteraone.com",
-      "checked_at": "2026-11-11T08:42:05.764Z",
+      "checked_at": "2026-11-11T16:48:25.786Z",
       "verdict": "accessible",
       "nodes": {
         "id1.node.check-host.net": {
@@ -166,7 +166,7 @@
           "isIndonesia": true,
           "ok": true,
           "httpCode": "301",
-          "timeSec": 0.416,
+          "timeSec": 0.064,
           "message": "Moved Permanently"
         },
         "id2.node.check-host.net": {
@@ -174,7 +174,7 @@
           "isIndonesia": true,
           "ok": true,
           "httpCode": "301",
-          "timeSec": 0.088,
+          "timeSec": 0.122,
           "message": "Moved Permanently"
         },
         "sg1.node.check-host.net": {
@@ -182,14 +182,14 @@
           "isIndonesia": false,
           "ok": true,
           "httpCode": "301",
-          "timeSec": 0.076,
+          "timeSec": 0.066,
           "message": "Moved Permanently"
         }
       }
     },
     "datascienceriot.com": {
       "domain": "datascienceriot.com",
-      "checked_at": "2026-11-11T08:42:12.045Z",
+      "checked_at": "2026-11-11T16:48:32.349Z",
       "verdict": "accessible",
       "nodes": {
         "id1.node.check-host.net": {
@@ -197,7 +197,7 @@
           "isIndonesia": true,
           "ok": true,
           "httpCode": "200",
-          "timeSec": 0.597,
+          "timeSec": 0.351,
           "message": "OK"
         },
         "id2.node.check-host.net": {
@@ -205,7 +205,7 @@
           "isIndonesia": true,
           "ok": true,
           "httpCode": "200",
-          "timeSec": 0.439,
+          "timeSec": 0.334,
           "message": "OK"
         },
         "sg1.node.check-host.net": {
@@ -213,14 +213,14 @@
           "isIndonesia": false,
           "ok": true,
           "httpCode": "200",
-          "timeSec": 0.318,
+          "timeSec": 0.356,
           "message": "OK"
         }
       }
     },
     "www.liputan6.com": {
       "domain": "www.liputan6.com",
-      "checked_at": "2026-11-11T08:42:18.484Z",
+      "checked_at": "2026-11-11T16:48:39.144Z",
       "verdict": "accessible",
       "nodes": {
         "id1.node.check-host.net": {
@@ -228,7 +228,7 @@
           "isIndonesia": true,
           "ok": true,
           "httpCode": "200",
-          "timeSec": 0.503,
+          "timeSec": 0.095,
           "message": "OK"
         },
         "id2.node.check-host.net": {
@@ -236,7 +236,7 @@
           "isIndonesia": true,
           "ok": true,
           "httpCode": "200",
-          "timeSec": 0.167,
+          "timeSec": 0.444,
           "message": "OK"
         },
         "sg1.node.check-host.net": {
@@ -244,7 +244,7 @@
           "isIndonesia": false,
           "ok": true,
           "httpCode": "200",
-          "timeSec": 0.052,
+          "timeSec": 0.045,
           "message": "OK"
         }
       }
